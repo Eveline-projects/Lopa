@@ -13,7 +13,6 @@ def user(db):
     )
 
 
-
 @pytest.fixture
 def problem(db):
     return Problem.objects.create(
