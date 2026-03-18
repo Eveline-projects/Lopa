@@ -5,6 +5,15 @@ from apps.engine.models import Submission
 
 
 @pytest.fixture
+def user(db):
+    return User.objects.create_user(
+        username='Adam',
+        email='adam@gmail.com',
+        password='testpassword123'
+    )
+
+
+@pytest.fixture
 def problem(db):
     return Problem.objects.create(
         description='description',
@@ -16,17 +25,10 @@ def problem(db):
 
 
 @pytest.fixture
-def submission(db, problem):
-    user = User.objects.create_user(
-        username='Adam',
-        email='adam@gmail.com',
-        password='1234'
-    )
-    test_code = 'print("Hello World")'
-
+def submission(db, user, problem):
     return Submission.objects.create(
         user=user,
         problem=problem,
-        code=test_code,
-        status='done'
+        code='print("Hello World")',
+        status=Submission.Status.DONE,
     )

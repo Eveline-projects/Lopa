@@ -1,15 +1,15 @@
 import uuid
 from django.conf import settings
 from django.db import models
-from apps.problems.models import Problem
 
 
 class Submission(models.Model):
-    STATUS_CHOICES = [
-        ('done', 'done'),
-        ('wrong_answer', 'wrong answer'),
-        ('error', 'error'),
-    ]
+    class Status(models.TextChoices):
+        DONE = 'done', 'Done'
+        WRONG_ANSWER = 'wrong_answer', 'Wrong answer'
+        PENDING = 'pending', 'Pending'
+        ERROR = 'error', 'Error'
+
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
@@ -21,17 +21,17 @@ class Submission(models.Model):
         related_name='submissions'
     )
     problem = models.ForeignKey(
-        Problem,
+        'problems.Problem',
         on_delete=models.CASCADE,
         related_name='submissions'
     )
     code = models.TextField()
-    status = models.CharField(
-        choices=STATUS_CHOICES,
-        max_length=15,
-        default='error'
-    )
     created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        choices=Status.choices,
+        max_length=15,
+        default=Status.PENDING,
+    )
 
     class Meta:
         ordering = ['-created_at']
