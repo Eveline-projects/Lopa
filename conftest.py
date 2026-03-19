@@ -30,7 +30,7 @@ def test_case(db, problem):
         problem=problem,
         input_data='[1,2,3]',
         expected_output='[0,1]',
-        is_hidden=True,
+        is_hidden=False,
     )
 
 

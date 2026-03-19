@@ -35,7 +35,7 @@ class TestCase(models.Model):
         editable=False
     )
     problem = models.ForeignKey(
-        'problems.Problem',
+        Problem,
         on_delete=models.CASCADE,
         related_name='testcases',
     )
