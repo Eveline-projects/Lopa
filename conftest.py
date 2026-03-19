@@ -1,6 +1,6 @@
 import pytest
 from django.contrib.auth.models import User
-from apps.problems.models import Problem
+from apps.problems.models import Problem, TestCase
 from apps.engine.models import Submission
 
 
@@ -21,6 +21,16 @@ def problem(db):
         difficulty='easy',
         category='Strings',
 
+    )
+
+
+@pytest.fixture
+def test_case(db, problem):
+    return TestCase.objects.create(
+        problem=problem,
+        input_data='[1,2,3]',
+        expected_output='[0,1]',
+        is_hidden=False,
     )
 
 
