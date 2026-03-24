@@ -2,6 +2,8 @@ import pytest
 from django.contrib.auth.models import User
 from apps.problems.models import Problem, TestCase
 from apps.engine.models import Submission
+from apps.problems.models import Problem
+from apps.engine.models import Submission, Result
 
 
 @pytest.fixture
@@ -20,7 +22,6 @@ def problem(db):
         title='Two Pointers',
         difficulty='easy',
         category='Strings',
-
     )
 
 
@@ -41,4 +42,14 @@ def submission(db, user, problem):
         problem=problem,
         code='print("Hello World")',
         status=Submission.Status.DONE,
+    )
+
+@pytest.fixture
+def result(db, submission, test_case):
+    return Result.objects.create(
+        submission=submission,
+        test_case=test_case,
+        status=Result.Status.RUNTIME_ERROR,
+        actual_output='123',
+        execution_time=0.2,
     )

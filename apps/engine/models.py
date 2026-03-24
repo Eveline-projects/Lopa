@@ -5,9 +5,9 @@ from django.db import models
 
 class Submission(models.Model):
     class Status(models.TextChoices):
+        PENDING = 'pending', 'Pending'
         DONE = 'done', 'Done'
         WRONG_ANSWER = 'wrong_answer', 'Wrong answer'
-        PENDING = 'pending', 'Pending'
         ERROR = 'error', 'Error'
 
     id = models.UUIDField(
@@ -38,3 +38,41 @@ class Submission(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.status}'
+
+
+class Result(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'PENDING', 'Pending'
+        PASSED = 'PASSED', 'Passed'
+        WRONG_ANSWER = 'WRONG_ANSWER', 'Wrong Answer'
+        TIME_LIMIT_EXCEEDED = 'TIME_LIMIT_EXCEEDED', 'Time Limit Exceeded'
+        RUNTIME_ERROR = 'RUNTIME_ERROR', 'Runtime Error'
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+    submission = models.ForeignKey(
+        Submission,
+        on_delete=models.CASCADE,
+        related_name='results',
+    )
+    test_case = models.ForeignKey(
+        'problems.TestCase',
+        on_delete=models.CASCADE,
+        related_name='results',
+    )
+    status = models.CharField(
+        choices=Status.choices,
+        max_length=25,
+        default=Status.PENDING,
+    )
+    actual_output = models.TextField(
+        null=True,
+        blank=True,
+    )
+    execution_time = models.FloatField(default=0.0)
+
+    def __str__(self):
+        return self.actual_output or "No output yet"
