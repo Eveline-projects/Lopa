@@ -1,0 +1,11 @@
+# Web Framework
+Django==6.0.3
+django-environ==0.13.0
+
+# Testing
+pytest==9.0.2
+pytest-django==4.12.0
+
+# Optional: Coverage
+coverage==7.13.4
+pytest-cov==7.0.0
