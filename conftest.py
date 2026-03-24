@@ -1,8 +1,6 @@
 import pytest
 from django.contrib.auth.models import User
 from apps.problems.models import Problem, TestCase
-from apps.engine.models import Submission
-from apps.problems.models import Problem
 from apps.engine.models import Submission, Result
 
 
@@ -43,6 +41,7 @@ def submission(db, user, problem):
         code='print("Hello World")',
         status=Submission.Status.DONE,
     )
+
 
 @pytest.fixture
 def result(db, submission, test_case):
