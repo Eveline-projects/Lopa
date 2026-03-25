@@ -15,9 +15,9 @@ def test_submission_should_store_submitted_code(submission):
     assert submission.code == 'print("Hello World")'
 
 
-def test_submission_should_have_done_status_by_default(submission):
+def test_submission_should_have_pending_status_by_default(submission):
     assert Submission.objects.count() == 1
-    assert submission.status == Submission.Status.DONE
+    assert submission.status == Submission.Status.PENDING
 
 
 def test_result_id_should_be_a_valid_uuid(result):
@@ -32,8 +32,8 @@ def test_result_should_be_linked_to_correct_test_case(result, test_case):
     assert result.test_case == test_case
 
 
-def test_result_should_store_runtime_error_status(result):
-    assert result.status == Result.Status.RUNTIME_ERROR
+def test_result_should_have_pending_status_by_default(result):
+    assert result.status == Result.Status.PENDING
 
 
 def test_result_should_store_actual_output_correctly(result):
@@ -51,4 +51,5 @@ def test_submission_related_manager_should_access_results(submission, result):
 
 
 def test_result_string_representation(result):
-    assert str(result) == result.actual_output
+    expected_string = f"Result {result.id} - {result.status}"
+    assert str(result) == expected_string

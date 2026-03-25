@@ -39,7 +39,6 @@ def submission(db, user, problem):
         user=user,
         problem=problem,
         code='print("Hello World")',
-        status=Submission.Status.DONE,
     )
 
 
@@ -48,7 +47,6 @@ def result(db, submission, test_case):
     return Result.objects.create(
         submission=submission,
         test_case=test_case,
-        status=Result.Status.RUNTIME_ERROR,
         actual_output='123',
         execution_time=0.2,
     )

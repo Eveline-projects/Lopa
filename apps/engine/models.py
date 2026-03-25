@@ -5,10 +5,10 @@ from django.db import models
 
 class Submission(models.Model):
     class Status(models.TextChoices):
-        PENDING = 'pending', 'Pending'
-        DONE = 'done', 'Done'
-        WRONG_ANSWER = 'wrong_answer', 'Wrong answer'
-        ERROR = 'error', 'Error'
+        PENDING = 'PENDING', 'Pending'
+        DONE = 'DONE', 'Done'
+        WRONG_ANSWER = 'WRONG_ANSWER', 'Wrong answer'
+        ERROR = 'ERROR', 'Error'
 
     id = models.UUIDField(
         primary_key=True,
@@ -74,5 +74,8 @@ class Result(models.Model):
     )
     execution_time = models.FloatField(default=0.0)
 
+    class Meta:
+        ordering = ['test_case__id']
+
     def __str__(self):
-        return self.actual_output or "No output yet"
+        return f"Result {self.id} - {self.status}"
