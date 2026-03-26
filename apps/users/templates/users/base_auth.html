@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>LOPA | Authentication</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary-container": "#9396ff", "on-secondary": "#41590f", "on-tertiary-container": "#004b58",
+                        "outline": "#6d758c", "surface-tint": "#a3a6ff", "secondary-fixed": "#ceee93",
+                        "secondary-container": "#364e03", "primary-fixed": "#9396ff", "on-primary-container": "#0a0081",
+                        "on-primary-fixed-variant": "#0e009d", "on-background": "#dee5ff", "on-primary": "#0f00a4",
+                        "tertiary-fixed-dim": "#40ceed", "on-tertiary-fixed-variant": "#005564", "on-error": "#490013",
+                        "secondary": "#ceee93", "error": "#ff6e84", "surface-variant": "#192540",
+                        "primary-dim": "#6063ee", "primary": "#a3a6ff", "secondary-fixed-dim": "#c0df86",
+                        "primary-fixed-dim": "#8387ff", "error-container": "#a70138", "on-surface-variant": "#a3aac4",
+                        "error-dim": "#d73357", "surface-container-low": "#091328", "tertiary": "#8ce7ff",
+                        "background": "#060e20", "inverse-primary": "#494bd7", "on-tertiary": "#005464",
+                        "surface-dim": "#060e20", "on-secondary-fixed": "#304600", "on-error-container": "#ffb2b9",
+                        "on-primary-fixed": "#000000", "tertiary-fixed": "#53ddfc", "outline-variant": "#40485d",
+                        "on-secondary-fixed-variant": "#4a6319", "surface-container-highest": "#192540",
+                        "secondary-dim": "#c0df86", "tertiary-dim": "#40ceed", "on-secondary-container": "#bcdb83",
+                        "inverse-surface": "#faf8ff", "inverse-on-surface": "#4d556b", "tertiary-container": "#53ddfc",
+                        "on-surface": "#dee5ff", "surface-bright": "#1f2b49", "surface-container-lowest": "#000000",
+                        "surface": "#060e20", "surface-container": "#0f1930", "on-tertiary-fixed": "#003640",
+                        "surface-container-high": "#141f38"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"], "body": ["Manrope"], "label": ["Space Grotesk"], "mono": ["JetBrains Mono"]
+                    },
+                    borderRadius: {"DEFAULT": "0px", "lg": "0px", "xl": "0px", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+    <style>
+        body { background: radial-gradient(circle at center, #101c38 0%, #060e20 100%); font-family: 'Manrope', sans-serif; color: #dee5ff; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .neo-brutalist-button { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 0px 0px rgba(163, 166, 255, 0); }
+        .neo-brutalist-button:hover { box-shadow: 0 0 20px 2px rgba(163, 166, 255, 0.4), 4px 4px 0px 0px #ceee93; transform: translate(-2px, -2px); }
+        .code-glass { background: linear-gradient(135deg, rgba(31, 43, 73, 0.7) 0%, rgba(15, 25, 48, 0.85) 100%); backdrop-filter: blur(16px); border: 1px solid rgba(163, 170, 196, 0.2); }
+        .form-container { background: radial-gradient(circle at top right, #0f1930 0%, #060e20 100%); }
+        .input-premium { background: linear-gradient(to bottom, #0d162d, #060e20) !important; color: #dee5ff; border: 1px solid rgba(163, 166, 255, 0.3); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3); transition: all 0.2s ease; }
+        .input-premium:focus { border-color: rgba(163, 166, 255, 0.8); box-shadow: 0 0 20px rgba(163, 166, 255, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.3); outline: none; }
+        .input-premium:-webkit-autofill { -webkit-text-fill-color: #dee5ff; -webkit-box-shadow: 0 0 0px 1000px #0d162d inset; }
+
+        .typing-line { display: block; width: 0; overflow: hidden; white-space: nowrap; animation: typing 1s forwards; }
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+
+        /* Poprawiona generacja opóźnień */
+        .typing-line:nth-child(1) { animation-delay: 0.1s; }
+        .typing-line:nth-child(2) { animation-delay: 0.8s; }
+        .typing-line:nth-child(3) { animation-delay: 1.5s; }
+        .typing-line:nth-child(4) { animation-delay: 2.2s; }
+        .typing-line:nth-child(5) { animation-delay: 2.9s; }
+        .typing-line:nth-child(6) { animation-delay: 3.6s; }
+        .typing-line:nth-child(7) { animation-delay: 4.3s; }
+        .typing-line:nth-child(8) { animation-delay: 5.0s; }
+    </style>
+</head>
+<body class="h-screen overflow-hidden flex flex-col">
+<nav class="shrink-0 w-full z-50 bg-[#060e20]/80 backdrop-blur-lg border-b border-[#40485d]/20 flex justify-between items-center px-8 py-4">
+    <div class="text-xl font-bold tracking-tighter text-[#a3a6ff] font-headline">LOPA</div>
+    <div class="flex items-center gap-8">
+        <a class="text-sm font-label text-[#a3aac4] hover:text-[#ceee93] transition-colors duration-200" href="#">Documentation</a>
+        <a class="text-sm font-label text-[#a3aac4] hover:text-[#ceee93] transition-colors duration-200" href="{% url 'login' %}">Sign in</a>
+    </div>
+</nav>
+<main class="flex flex-1 w-full min-h-0">
+    <section class="hidden lg:flex flex-1 items-center justify-center p-12 relative overflow-hidden border-r border-outline-variant/10">
+        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary-dim opacity-10 blur-[140px]"></div>
+        <div class="absolute bottom-[-5%] right-[-5%] w-[400px] h-[400px] bg-secondary opacity-10 blur-[120px]"></div>
+        <div class="z-10 w-full max-w-xl">
+            <div class="mb-8 space-y-2">
+                <span class="text-secondary font-mono text-xs tracking-[0.3em] uppercase opacity-80">Initialising_Protocol_v4.0</span>
+                <h1 class="text-4xl xl:text-5xl font-headline font-bold text-on-surface leading-[1.1] tracking-tight">Architecture is the <br/><span class="text-primary italic">Ultimate Algorithm.</span></h1>
+            </div>
+            <div class="code-glass p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+                <div class="flex gap-2.5 mb-6">
+                    <div class="w-2.5 h-2.5 rounded-full bg-error/50"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-secondary/50"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-tertiary/50"></div>
+                </div>
+                <pre class="font-mono text-xs xl:text-sm leading-relaxed overflow-hidden">
+<span class="typing-line"><span class="text-primary-dim">def</span> <span class="text-secondary">optimize_career</span>(dev_stack):</span>
+<span class="typing-line">    <span class="text-outline">"""Level up technical architect status"""</span></span>
+<span class="typing-line">    skills = []</span>
+<span class="typing-line">    <span class="text-primary-dim">for</span> module <span class="text-primary-dim">in</span> LOPA.curriculum:</span>
+<span class="typing-line">        <span class="text-tertiary"># Implement performance patterns</span></span>
+<span class="typing-line">        mastery = module.<span class="text-secondary-fixed">execute_practice</span>()</span>
+<span class="typing-line">        skills.append(mastery)</span>
+<span class="typing-line">    <span class="text-primary-dim">return</span> <span class="text-secondary-fixed-dim">"Unstoppable"</span></span>
+<span class="typing-line"><span class="text-outline-variant">// System ready for deployment...</span></span></pre>
+            </div>
+        </div>
+    </section>
+
+    <section class="flex-1 form-container flex items-center justify-center p-6 sm:p-10 overflow-hidden">
+        <div class="w-full max-w-md max-h-full flex flex-col">
+            {% block auth_header %}{% endblock %}
+
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <button class="flex items-center justify-center gap-2 py-2.5 border border-outline-variant/30 hover:bg-surface-container-high hover:border-outline-variant/60 transition-all text-[10px] font-label font-bold uppercase tracking-widest text-on-surface">
+                    <img alt="GitHub" class="w-4 h-4 opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVyqTV66_9ZWK8kpPGWmJkrme3OapCkbQevqkJA4oJRJ9K7RDcqhVdGzZxKmo7hIjIshfhgsm_pLAXxlyiwFcvJTJQf133nKsD0ntzP8J64vg1UuBgcKgqXpKH82kyw1BTxIxCUGoCO5Uc0peAnu7XHK2yQCwb8bn-UqM3NPv_vOmNdvguDEeO5-PYigxCoCIpqGF8WFT7hLer-D7KF69Uvl9tNZliMOb2OHd3VdWrQWP730BFiww-rKcpMMjDAraMgbYZHfjwZrU"/>
+                    <span>GitHub</span>
+                </button>
+                <button class="flex items-center justify-center gap-2 py-2.5 border border-outline-variant/30 hover:bg-surface-container-high hover:border-outline-variant/60 transition-all text-[10px] font-label font-bold uppercase tracking-widest text-on-surface">
+                    <img alt="Google" class="w-4 h-4 opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2ydNr0DP07EPLxppk9SF2NU33AUPaI2JBWvTDfZbEtitdngh21tg0O6FV1UCl9dvDwhs9ZG5OkhAjOxWPI8AjgEhTN98zJBNHf-UpsjoEMwa0wcQLQzZh4pSRznpUHOkFWqkUPFS1spqNTT8MsY4NaV1i36YsMMK9IC6Hgwt-6fxoIMt525CShXktAmoYa6vjGxiTgPAWKtUb9yl9Fc6ikKaeuVHjn9-UvLe8FSrcAPufewRkl3_tCzyXaI6gh957Xl5xRY1AXDc"/>
+                    <span>Google</span>
+                </button>
+            </div>
+
+            <div class="relative flex items-center py-4 mb-4">
+                <div class="flex-grow border-t border-outline-variant/20"></div>
+                <span class="flex-shrink mx-4 text-outline-variant text-[9px] uppercase font-mono tracking-[0.4em] font-medium">Or via internal link</span>
+                <div class="flex-grow border-t border-outline-variant/20"></div>
+            </div>
+
+            {% block auth_form %}{% endblock %}
+            {% block auth_footer %}{% endblock %}
+        </div>
+    </section>
+</main>
+<div class="pointer-events-none fixed inset-0 z-[60] opacity-[0.04] mix-blend-overlay">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <filter id="noise"><feturbulence baseFrequency="0.75" numOctaves="4" stitchTiles="stitch" type="fractalNoise"></feturbulence></filter>
+        <rect width="100%" height="100%" filter="url(#noise)"></rect>
+    </svg>
+</div>
+</body>
+</html>
+

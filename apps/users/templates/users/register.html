@@ -1,0 +1,63 @@
+{% extends "users/base_auth.html" %}
+{% load widget_tweaks %}
+
+{% block auth_header %}
+<div class="mb-6">
+    <h2 class="text-3xl font-headline font-bold text-on-surface mb-1 tracking-tight">Create Account</h2>
+    <p class="text-on-surface-variant font-body text-base opacity-80">Begin your journey into high-performance engineering.</p>
+</div>
+{% endblock %}
+
+{% block auth_form %}
+<form method="post" class="space-y-4 shrink-0 overflow-y-auto pr-1">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+        <div class="text-error text-[10px] mb-2 font-mono uppercase tracking-wider">{{ form.non_field_errors.0 }}</div>
+    {% endif %}
+
+    {% for field in form %}
+    <div class="group">
+        <label class="block text-[9px] font-mono uppercase tracking-[0.3em] text-outline-variant mb-1.5 group-focus-within:text-primary transition-colors">
+            {% if forloop.counter == 1 %}Identifier_Username
+            {% elif forloop.counter == 2 %}Protocol_Email
+            {% elif forloop.counter == 3 %}Access_Password
+            {% elif forloop.counter == 4 %}Verify_Access_Password
+            {% else %}{{ field.label|upper }}{% endif %}
+        </label>
+
+        {% if forloop.counter == 1 %}
+            {% render_field field class="input-premium w-full focus:ring-0 px-4 py-2.5 transition-all placeholder:font-mono text-sm" placeholder="NEO_ARCHITECT" %}
+        {% elif forloop.counter == 2 %}
+            {% render_field field class="input-premium w-full focus:ring-0 px-4 py-2.5 transition-all placeholder:font-mono text-sm" placeholder="DEV@LOPA.IO" %}
+        {% elif forloop.counter == 3 %}
+            {% render_field field class="input-premium w-full focus:ring-0 px-4 py-2.5 transition-all placeholder:font-mono text-sm" placeholder="••••••••••••" %}
+        {% elif forloop.counter == 4 %}
+            {% render_field field class="input-premium w-full focus:ring-0 px-4 py-2.5 transition-all placeholder:font-mono text-sm" placeholder="RE-ENTER PASSWORD" %}
+        {% else %}
+            {% render_field field class="input-premium w-full focus:ring-0 px-4 py-2.5 transition-all placeholder:font-mono text-sm" placeholder=field.label %}
+        {% endif %}
+
+        {% if field.errors %}
+            <p class="text-error text-[10px] mt-1 font-mono uppercase tracking-wider">{{ field.errors.0 }}</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <div class="pt-2">
+        <button class="neo-brutalist-button w-full bg-primary text-on-primary font-headline font-bold py-4 uppercase tracking-[0.2em] text-sm flex items-center justify-center gap-3" type="submit">
+            Deploy Account
+            <span class="material-symbols-outlined text-xl">arrow_forward</span>
+        </button>
+    </div>
+</form>
+{% endblock %}
+
+{% block auth_footer %}
+<p class="mt-6 text-center text-xs text-on-surface-variant font-medium">
+    By registering, you agree to our
+    <a class="text-primary hover:text-secondary underline underline-offset-4 decoration-primary/40 transition-all" href="#">Terms of Service</a>
+</p>
+<p class="mt-4 text-center text-xs text-on-surface-variant font-medium opacity-60">
+    Already have an account? <a href="{% url 'login' %}" class="text-primary hover:underline">Sign in</a>
+</p>
+{% endblock %}
