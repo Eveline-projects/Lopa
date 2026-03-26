@@ -1,5 +1,5 @@
 import pytest
-from django.contrib.auth.models import User
+from apps.users.models import User
 from apps.problems.models import Problem, TestCase
 from apps.engine.models import Submission, Result
 
