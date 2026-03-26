@@ -17,33 +17,34 @@ Lopa (from the Polish "łopatologicznie" meaning straightforward or down-to-eart
 - Error reporting: Clear information about `Runtime Error`,  `Time Limit Exceeded` or `Wrong Answer`.
 
 ### 🛠 Technologies:
-* **Language:** Python 3.12+
+* **Language:** Python 3.13+ (via `uv`)
 * **Framework:** Django 6.0.x
+* **Package Manager:** uv (Extremely fast Python package installer and resolver)
 * **Database:** SQLite (dev/local)
 * **Testing:** Pytest 9.0.x with Pytest-Django
-* **Environment:** Django-environ (Configuration via .env)
+* **Configuration:** `pyproject.toml` & `uv.lock` (Modern dependency management)
+* **Environment:** Django-environ (Configuration via `.env`)
 
 ## Quick Start
 ### 1. Installation
+Lopa uses uv for lightning-fast dependency management. Install uv if you haven't already.
 ```bash
 # Clone the repository
 git clone https://github.com/Eveline-projects/Lopa.git
 cd Lopa
 
-# Create and activate a virtual environment
-python -m venv venv
-source venv/bin/activate  # Linux/macOS
-# or: venv\Scripts\activate (Windows)
-
-# Install dependencies
-pip install -r requirements.txt
+# Setup environment and install dependencies automatically
+uv sync
 ```
 
 ### 2. Database configuration and startup
+You don't need to manually activate the virtual environment; uv run handles it for you.
 ```bash
-python manage.py migrate 
+# Run migrations
+uv run manage.py migrate 
 
-python manage.py runserver
+# Start the development server
+uv run manage.py runserver
 ```
 
 The app is available at: `http://127.0.0.1:8000/`
@@ -59,13 +60,13 @@ The system is based on the logical interconnection of four pillars:
 | **Result** | Detailed execution report: execution time and error messages for a single test. |
 
 ## Automated Testing
-The project prioritizes reliability, which is why every engine function is tested using pytest.
+The project prioritizes reliability, using uv to orchestrate tests using pytest.
 ```bash
 # Run all tests
-pytest
+uv run pytest
 
 # Run in detailed mode
-pytest -v
+uv run pytest -v
 ```
 ## Test Structure:
 - `tests/test_problems.py` – model and relationship validation.
@@ -90,22 +91,34 @@ Lopa/
 │   │   ├── apps.py
 │   │   └── ...
 │   ├── problems/
-│       ├── migrations/        # Here are the files 0001_initial and 0002_testcase
-│       ├── models.py          # Problem and Test Case Models
+│   │   ├── migrations/        # Here are the files 0001_initial and 0002_testcase
+│   │   ├── models.py          # Problem and Test Case Models
+│   │   ├── apps.py
+│   │   └── ...
+│   └── users/                 # Custom User Model & Authentication logic
+│       ├── migrations/
+│       ├── models.py          # Custom User model (Architects/Developers)
 │       ├── apps.py
 │       └── ...      
-├── config/                      # Main project settings folder
-│   ├── settings.py            # Configuration of databases, installed applications, and pytest
+├── config/                    # Main project settings folder
+│   ├── settings.py            # Configuration of databases, apps, and pytest
 │   ├── urls.py
 │   └── wsgi.py 
-├── static/
+├── static/                    # Global static files
 │    ├── css/
 │    └── js/
+├── templates/                 # Global templates for the whole project
+│    ├── base.html             # Main layout (navbar, footer, etc.)
+│    └── index.html            # Landing page
 ├── tests/                     # Folder containing automated tests
-│   ├── test_engine.py         # Tests for Submission
-│   └── test_problems.py       # Tests for Problem and TestCase
-├── conftest.py                # Pytest fixtures (problem, submission, test_case, result)
+│   ├── test_engine.py         # Tests for Submission logic
+│   ├── test_problems.py       # Tests for Problem and TestCase models
+│   └── test_users.py          # Tests for User registration and login
+├── .python-version            # Defines the project's Python version (3.13)
+├── conftest.py                # Pytest fixtures (shared test data)
 ├── manage.py                  # Django management script
+├── pyproject.toml             # Modern project configuration (dependencies)
 ├── pytest.ini                 # Pytest configuration
-└── requirements.txt           # List of dependencies (Django, pytest-django, etc.)
+├── README.md                  # Project documentation
+└── uv.lock                    # Deterministic dependency lockfile
 ```
