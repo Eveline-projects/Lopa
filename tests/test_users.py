@@ -5,7 +5,7 @@ from django.contrib.auth import get_user
 from apps.users.forms import CreateUserForm, ArchitectLoginForm
 
 
-def test_create_user_form_fails_without_email(user):
+def test_create_user_form_fails_without_email():
     form = CreateUserForm(data={'username': 'Adam', 'email': ''})
     assert not form.is_valid()
     assert 'email' in form.errors

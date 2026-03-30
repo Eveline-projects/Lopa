@@ -4,6 +4,9 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>LOPA | Authentication</title>
+    {% comment %}
+    TODO: Replace Tailwind CDN with a production build step (e.g. django-tailwind or PostCSS) before deployment.
+    {% endcomment %}
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
@@ -105,18 +108,18 @@
     <section class="flex-1 form-container flex items-center justify-center p-6 sm:p-10 overflow-hidden">
         <div class="w-full max-w-md max-h-full flex flex-col">
             {% block auth_header %}{% endblock %}
-
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <button class="flex items-center justify-center gap-2 py-2.5 border border-outline-variant/30 hover:bg-surface-container-high hover:border-outline-variant/60 transition-all text-[10px] font-label font-bold uppercase tracking-widest text-on-surface">
-                    <img alt="GitHub" class="w-4 h-4 opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVyqTV66_9ZWK8kpPGWmJkrme3OapCkbQevqkJA4oJRJ9K7RDcqhVdGzZxKmo7hIjIshfhgsm_pLAXxlyiwFcvJTJQf133nKsD0ntzP8J64vg1UuBgcKgqXpKH82kyw1BTxIxCUGoCO5Uc0peAnu7XHK2yQCwb8bn-UqM3NPv_vOmNdvguDEeO5-PYigxCoCIpqGF8WFT7hLer-D7KF69Uvl9tNZliMOb2OHd3VdWrQWP730BFiww-rKcpMMjDAraMgbYZHfjwZrU"/>
-                    <span>GitHub</span>
-                </button>
-                <button class="flex items-center justify-center gap-2 py-2.5 border border-outline-variant/30 hover:bg-surface-container-high hover:border-outline-variant/60 transition-all text-[10px] font-label font-bold uppercase tracking-widest text-on-surface">
-                    <img alt="Google" class="w-4 h-4 opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2ydNr0DP07EPLxppk9SF2NU33AUPaI2JBWvTDfZbEtitdngh21tg0O6FV1UCl9dvDwhs9ZG5OkhAjOxWPI8AjgEhTN98zJBNHf-UpsjoEMwa0wcQLQzZh4pSRznpUHOkFWqkUPFS1spqNTT8MsY4NaV1i36YsMMK9IC6Hgwt-6fxoIMt525CShXktAmoYa6vjGxiTgPAWKtUb9yl9Fc6ikKaeuVHjn9-UvLe8FSrcAPufewRkl3_tCzyXaI6gh957Xl5xRY1AXDc"/>
-                    <span>Google</span>
-                </button>
-            </div>
-
+                {% comment "TODO: restore social login buttons after OAuth backend integration (e.g. django-allauth)." %}
+<!--            <div class="grid grid-cols-2 gap-4 mb-6">-->
+<!--                <button class="flex items-center justify-center gap-2 py-2.5 border border-outline-variant/30 hover:bg-surface-container-high hover:border-outline-variant/60 transition-all text-[10px] font-label font-bold uppercase tracking-widest text-on-surface">-->
+<!--                    <img alt="GitHub" class="w-4 h-4 opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVyqTV66_9ZWK8kpPGWmJkrme3OapCkbQevqkJA4oJRJ9K7RDcqhVdGzZxKmo7hIjIshfhgsm_pLAXxlyiwFcvJTJQf133nKsD0ntzP8J64vg1UuBgcKgqXpKH82kyw1BTxIxCUGoCO5Uc0peAnu7XHK2yQCwb8bn-UqM3NPv_vOmNdvguDEeO5-PYigxCoCIpqGF8WFT7hLer-D7KF69Uvl9tNZliMOb2OHd3VdWrQWP730BFiww-rKcpMMjDAraMgbYZHfjwZrU"/>-->
+<!--                    <span>GitHub</span>-->
+<!--                </button>-->
+<!--                <button class="flex items-center justify-center gap-2 py-2.5 border border-outline-variant/30 hover:bg-surface-container-high hover:border-outline-variant/60 transition-all text-[10px] font-label font-bold uppercase tracking-widest text-on-surface">-->
+<!--                    <img alt="Google" class="w-4 h-4 opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2ydNr0DP07EPLxppk9SF2NU33AUPaI2JBWvTDfZbEtitdngh21tg0O6FV1UCl9dvDwhs9ZG5OkhAjOxWPI8AjgEhTN98zJBNHf-UpsjoEMwa0wcQLQzZh4pSRznpUHOkFWqkUPFS1spqNTT8MsY4NaV1i36YsMMK9IC6Hgwt-6fxoIMt525CShXktAmoYa6vjGxiTgPAWKtUb9yl9Fc6ikKaeuVHjn9-UvLe8FSrcAPufewRkl3_tCzyXaI6gh957Xl5xRY1AXDc"/>-->
+<!--                    <span>Google</span>-->
+<!--                </button>-->
+<!--            </div>-->
+                {% endcomment %}
             <div class="relative flex items-center py-4 mb-4">
                 <div class="flex-grow border-t border-outline-variant/20"></div>
                 <span class="flex-shrink mx-4 text-outline-variant text-[9px] uppercase font-mono tracking-[0.4em] font-medium">Or via internal link</span>

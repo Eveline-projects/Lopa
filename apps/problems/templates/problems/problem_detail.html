@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html' %}
 
-</body>
-</html>
+{% block content %}
+<div class="p-8">
+    <h1 class="text-2xl font-bold">Szczegóły zadania</h1>
+    <p class="text-on-surface-variant">Widok pojedynczego zadania - w trakcie budowy.</p>
+    <a href="{% url 'home' %}" class="text-primary underline">Powrót do strony głównej</a>
+</div>
+{% endblock %}
