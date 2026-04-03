@@ -1,20 +1,18 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
+*.py[cod]
 *$py.class
 .idea/
 .idea/misc.xml
-__pycache__/
 *.pyc
-*.py[codz]
-*$py.class
 .idea/jpydzr9-fantastyczna-czworka.iml
 __pycache__
-*.pyc
 db.sqlite3
 identifier.sqlite
 venv/
 .venv/
+.venv
 # C extensions
 *.so
 .env

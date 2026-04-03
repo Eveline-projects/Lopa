@@ -1,0 +1,58 @@
+{% extends "users/base_auth.html" %}
+{% load widget_tweaks %}
+
+{% block auth_header %}
+<div class="mb-6">
+    <h2 class="text-3xl font-headline font-bold text-on-surface mb-1 tracking-tight">Sign In</h2>
+    <p class="text-on-surface-variant font-body text-base opacity-80">Continue your journey into high-performance engineering.</p>
+</div>
+{% endblock %}
+
+{% block auth_form %}
+<form method="post" class="space-y-4 shrink-0 overflow-y-auto pr-1">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+        <div class="text-error text-[10px] mb-2 font-mono uppercase tracking-wider">{{ form.non_field_errors.0 }}</div>
+    {% endif %}
+
+    {% for field in form %}
+    <div class="group">
+        <div class="flex justify-between items-center mb-1.5">
+            <label class="block text-[9px] font-mono uppercase tracking-[0.3em] text-outline-variant group-focus-within:text-primary transition-colors">
+                {% if field.name == 'username' %}Identifier_Username
+                {% elif field.name == 'password' %}Access_Password
+                {% else %}{{ field.label|upper }}{% endif %}
+            </label>
+            {% if field.name == 'password' %}
+                <a class="text-[9px] font-mono uppercase tracking-widest text-primary-dim hover:text-primary transition-colors" href="#">Forgot?</a>
+            {% endif %}
+        </div>
+
+
+        {% if field.name == 'username' %}
+            {% render_field field class="input-premium w-full focus:ring-0 px-4 py-2.5 transition-all placeholder:font-mono text-sm" placeholder="dev@lopa.io" %}
+        {% elif field.name == 'password' %}
+            {% render_field field class="input-premium w-full focus:ring-0 px-4 py-2.5 transition-all placeholder:font-mono text-sm" placeholder="••••••••••••" %}
+        {% else %}
+            {% render_field field class="input-premium w-full focus:ring-0 px-4 py-2.5 transition-all placeholder:font-mono text-sm" placeholder=field.label %}
+        {% endif %}
+
+        {% if field.errors %}<p class="text-error text-[10px] mt-1 font-mono uppercase tracking-wider">{{ field.errors.0 }}</p>{% endif %}
+    </div>
+    {% endfor %}
+
+    <div class="pt-4">
+        <button class="neo-brutalist-button w-full bg-primary text-on-primary font-headline font-bold py-4 uppercase tracking-[0.2em] text-sm flex items-center justify-center gap-3" type="submit">
+            Authorize Access
+            <span class="material-symbols-outlined text-xl">arrow_forward</span>
+        </button>
+    </div>
+</form>
+{% endblock %}
+
+{% block auth_footer %}
+<p class="mt-8 text-center text-xs text-on-surface-variant font-medium">
+    Don't have an account?
+    <a href="{% url 'register' %}" class="text-primary hover:text-secondary underline underline-offset-4 decoration-primary/40 transition-all">Create one</a>
+</p>
+{% endblock %}
