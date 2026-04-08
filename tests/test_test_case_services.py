@@ -41,7 +41,6 @@ class TestTestCaseService:
 
         assert 'Input data cannot be empty' in str(excinfo.value)
 
-
     def test_create_test_case_should_fail_on_empty_expected_output(self, problem):
         with pytest.raises(ValidationError) as excinfo:
             services.create_test_case(

@@ -48,6 +48,13 @@ class TestProblemService:
         assert problem.title == new_title
         assert problem.difficulty == old_difficulty
 
+    def test_update_problem_should_raise_error_on_invalid_difficulty(self, problem: Problem):
+        with pytest.raises(ValidationError):
+            services.update_problem(
+                problem,
+                difficulty="invalid_level"
+            )
+
     def test_update_problem_should_change_difficulty(self, problem: Problem):
         services.update_problem(
             problem,
@@ -56,8 +63,7 @@ class TestProblemService:
         problem.refresh_from_db()
         assert problem.difficulty == 'hard'
 
-
     def test_delete_problem_should_deactivate_problem(self, problem: Problem):
-        services.delete_problem(problem)
+        services.deactivate_problem(problem)
         problem.refresh_from_db()
         assert problem.is_active is False
