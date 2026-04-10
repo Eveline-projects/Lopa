@@ -1,12 +1,16 @@
 from django.core.exceptions import ValidationError
 import pytest
-from apps.problems import services
-from apps.problems.models import TestCase as ProblemTestCase
+from apps.test_cases.services import TestCaseService
+from apps.test_cases.models import TestCase as ProblemTestCase
 
 
 @pytest.mark.django_db
 class TestTestCaseService:
-    def test_create_test_case_should_set_correct_fields(self, problem):
+    @pytest.fixture
+    def services(self):
+        return TestCaseService()
+
+    def test_create_test_case_should_set_correct_fields(self, services, problem):
         test_case = services.create_test_case(
             problem=problem,
             input_data='2 + 2',
@@ -20,7 +24,7 @@ class TestTestCaseService:
         assert test_case.expected_output == '4'
         assert test_case.is_hidden is True
 
-    def test_create_test_case_should_not_save_to_db_on_validation_error(self, problem):
+    def test_create_test_case_should_not_save_to_db_on_validation_error(self, services, problem):
         initial_count = ProblemTestCase.objects.count()
 
         with pytest.raises(ValidationError):
@@ -31,7 +35,7 @@ class TestTestCaseService:
             )
         assert ProblemTestCase.objects.count() == initial_count
 
-    def test_create_test_case_should_fail_on_empty_input(self, problem):
+    def test_create_test_case_should_fail_on_empty_input(self, services, problem):
         with pytest.raises(ValidationError) as excinfo:
             services.create_test_case(
                 problem=problem,
@@ -41,7 +45,7 @@ class TestTestCaseService:
 
         assert 'Input data cannot be empty' in str(excinfo.value)
 
-    def test_create_test_case_should_fail_on_empty_expected_output(self, problem):
+    def test_create_test_case_should_fail_on_empty_expected_output(self, services, problem):
         with pytest.raises(ValidationError) as excinfo:
             services.create_test_case(
                 problem=problem,
