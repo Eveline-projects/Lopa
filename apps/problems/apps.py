@@ -3,3 +3,4 @@ from django.apps import AppConfig
 
 class ProblemsConfig(AppConfig):
     name = 'apps.problems'
+    label = 'problems'
