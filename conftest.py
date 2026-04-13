@@ -1,7 +1,9 @@
 import pytest
 from apps.users.models import User
-from apps.problems.models import Problem, TestCase
-from apps.engine.models import Submission, Result
+from apps.problems.models import Problem
+from apps.test_cases.models import TestCase
+from apps.submissions.models import Submission
+from apps.results.models import Result
 
 
 @pytest.fixture
