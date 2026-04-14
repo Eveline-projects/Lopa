@@ -6,12 +6,8 @@ from apps.problems.models import Problem
 
 @pytest.mark.django_db
 class TestProblemService:
-    @pytest.fixture
-    def services(self):
-        return ProblemService()
-
-    def test_create_problem_should_set_correct_fields(self, services):
-        new_problem = services.create_problem(
+    def test_create_problem_should_set_correct_fields(self):
+        new_problem = ProblemService.create_problem(
             title='Easy Problem',
             description='Test',
             difficulty='easy',
@@ -23,8 +19,8 @@ class TestProblemService:
         assert new_problem.category == 'Test'
         assert new_problem.is_active is True
 
-    def test_create_problem_should_create_record_in_db(self, services):
-        new_problem = services.create_problem(
+    def test_create_problem_should_create_record_in_db(self):
+        new_problem = ProblemService.create_problem(
             title='Easy Problem',
             description='Test',
             difficulty='easy',
@@ -33,16 +29,16 @@ class TestProblemService:
         assert Problem.objects.count() == 1
         assert new_problem.title == 'Easy Problem'
 
-    def test_create_problem_should_raise_error_on_invalid_difficulty(self, services):
+    def test_create_problem_should_raise_error_on_invalid_difficulty(self):
         with pytest.raises(ValidationError):
-            services.create_problem(
+            ProblemService.create_problem(
                 title='Test',
                 description='Test',
                 difficulty='invalid_level',
                 category='Test'
             )
 
-    def test_get_all_problems_should_returns_only_active_problems(self, services):
+    def test_get_all_problems_should_returns_only_active_problems(self):
         Problem.objects.create(
             title='Active',
             description="Active description",
@@ -58,57 +54,57 @@ class TestProblemService:
             is_active=False
         )
 
-        problems = services.get_all_problems()
+        problems = ProblemService.get_all_problems()
 
         assert problems.count() == 1
         assert problems.first().title == "Active"
         assert problems.first().is_active is True
 
-    def test_get_problem_by_id_should_returns_problem(self, services):
+    def test_get_problem_by_id_should_returns_problem(self):
         problem = Problem.objects.create(
             title='Test Problem',
             is_active=True
         )
-        result = services.get_problem_by_id(problem.id)
+        result = ProblemService.get_problem_by_id(problem.id)
 
         assert result == problem
         assert result.title == 'Test Problem'
 
-    def test_get_problem_by_id_should_raises_error_for_inactive_problem(self, services):
+    def test_get_problem_by_id_should_raises_error_for_inactive_problem(self):
         inactive_problem = Problem.objects.create(
             title='Inactive Problem',
             is_active=False
         )
 
         with pytest.raises(Problem.DoesNotExist):
-            services.get_problem_by_id(inactive_problem.id)
+            ProblemService.get_problem_by_id(inactive_problem.id)
 
-    def test_update_problem_should_update_only_provided_fields(self, problem: Problem, services):
+    def test_update_problem_should_update_only_provided_fields(self, problem: Problem):
         old_difficulty = problem.difficulty
         new_title = 'New Title'
 
-        services.update_problem(problem, title=new_title)
+        ProblemService.update_problem(problem, title=new_title)
 
         problem.refresh_from_db()
         assert problem.title == new_title
         assert problem.difficulty == old_difficulty
 
-    def test_update_problem_should_raise_error_on_invalid_difficulty(self, problem: Problem, services):
+    def test_update_problem_should_raise_error_on_invalid_difficulty(self, problem: Problem):
         with pytest.raises(ValidationError):
-            services.update_problem(
+            ProblemService.update_problem(
                 problem=problem,
                 difficulty="invalid_level"
             )
 
-    def test_update_problem_should_change_difficulty(self, problem: Problem, services):
-        services.update_problem(
+    def test_update_problem_should_change_difficulty(self, problem: Problem):
+        ProblemService.update_problem(
             problem=problem,
             difficulty='hard'
         )
         problem.refresh_from_db()
         assert problem.difficulty == 'hard'
 
-    def test_delete_problem_should_deactivate_problem(self, problem: Problem, services):
-        services.deactivate_problem(problem=problem)
+    def test_delete_problem_should_deactivate_problem(self, problem: Problem):
+        ProblemService.deactivate_problem(problem=problem)
         problem.refresh_from_db()
         assert problem.is_active is False
