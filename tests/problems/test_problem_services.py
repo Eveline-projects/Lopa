@@ -42,6 +42,47 @@ class TestProblemService:
                 category='Test'
             )
 
+    def test_get_all_problems_should_returns_only_active_problems(self, services):
+        Problem.objects.create(
+            title='Active',
+            description="Active description",
+            difficulty="easy",
+            category="arrays",
+            is_active=True
+        )
+        Problem.objects.create(
+            title='Inactive',
+            description="Inactive description",
+            difficulty="easy",
+            category="arrays",
+            is_active=False
+        )
+
+        problems = services.get_all_problems()
+
+        assert problems.count() == 1
+        assert problems.first().title == "Active"
+        assert problems.first().is_active is True
+
+    def test_get_problem_by_id_should_returns_problem(self, services):
+        problem = Problem.objects.create(
+            title='Test Problem',
+            is_active=True
+        )
+        result = services.get_problem_by_id(problem.id)
+
+        assert result == problem
+        assert result.title == 'Test Problem'
+
+    def test_get_problem_by_id_should_raises_error_for_inactive_problem(self, services):
+        inactive_problem = Problem.objects.create(
+            title='Inactive Problem',
+            is_active=False
+        )
+
+        with pytest.raises(Problem.DoesNotExist):
+            services.get_problem_by_id(inactive_problem.id)
+
     def test_update_problem_should_update_only_provided_fields(self, problem: Problem, services):
         old_difficulty = problem.difficulty
         new_title = 'New Title'

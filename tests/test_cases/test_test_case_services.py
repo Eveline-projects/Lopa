@@ -2,6 +2,7 @@ from django.core.exceptions import ValidationError
 import pytest
 from apps.test_cases.services import TestCaseService
 from apps.test_cases.models import TestCase as ProblemTestCase
+from apps.problems.models import Problem
 
 
 @pytest.mark.django_db
@@ -54,3 +55,54 @@ class TestTestCaseService:
             )
 
         assert "Expected output cannot be empty" in str(excinfo.value)
+
+    def test_get_test_cases_for_problem_should_return_only_test_cases_for_selected_problem(
+            self,
+            services,
+            problem
+    ):
+        other_problem = Problem.objects.create(
+            title='Other problem',
+            description='Other description',
+            difficulty='easy',
+            category='arrays',
+        )
+        first_test_case = ProblemTestCase.objects.create(
+            problem=problem,
+            input_data='1 2',
+            expected_output='3',
+        )
+        second_test_case = ProblemTestCase.objects.create(
+            problem=problem,
+            input_data='2 2',
+            expected_output='4',
+        )
+        ProblemTestCase.objects.create(
+            problem=other_problem,
+            input_data='5 5',
+            expected_output='10',
+        )
+
+        result = services.get_test_cases_for_problem(problem.id)
+        assert result.count() == 2
+        assert first_test_case in result
+        assert second_test_case in result
+        assert all(test_case.problem_id == problem.id for test_case in result)
+
+    def test_get_test_case_by_id_should_return_test_case(self, services, problem):
+        test_case = ProblemTestCase.objects.create(
+            problem=problem,
+            input_data='10 20',
+            expected_output='30',
+        )
+
+        result = services.get_test_case_by_id(test_case.id)
+
+        assert result == test_case
+        assert result.problem == problem
+        assert result.input_data == '10 20'
+        assert result.expected_output == '30'
+
+    def test_get_test_case_by_id_should_raise_error_for_nonexistent_id(self, services):
+       with pytest.raises(ProblemTestCase.DoesNotExist):
+            services.get_test_case_by_id(999999)

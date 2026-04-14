@@ -1,11 +1,13 @@
+import uuid
+from django.db.models import QuerySet
 from .models import TestCase
 from apps.problems.models import Problem
 from django.core.exceptions import ValidationError
 
 
 class TestCaseService:
+    @staticmethod
     def create_test_case(
-            self,
             problem: Problem,
             input_data: str,
             expected_output: str,
@@ -22,3 +24,11 @@ class TestCaseService:
             expected_output=expected_output,
             is_hidden=is_hidden,
         )
+
+    @staticmethod
+    def get_test_cases_for_problem(problem_id: uuid.UUID) -> QuerySet[TestCase]:
+        return TestCase.objects.filter(problem_id=problem_id)
+
+    @staticmethod
+    def get_test_case_by_id(test_case_id: uuid.UUID) -> TestCase:
+        return TestCase.objects.get(id=test_case_id)

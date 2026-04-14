@@ -5,8 +5,8 @@ VALID_DIFFICULTY_KEYS = [choice[0] for choice in DIFFICULTY_CHOICES]
 
 
 class ProblemService:
+    @staticmethod
     def create_problem(
-            self,
             title: str,
             description: str,
             difficulty: str,
@@ -22,8 +22,16 @@ class ProblemService:
             category=category,
         )
 
+    @staticmethod
+    def get_all_problems():
+        return Problem.objects.filter(is_active=True)
+
+    @staticmethod
+    def get_problem_by_id(problem_id: int) -> Problem:
+        return Problem.objects.get(id=problem_id, is_active=True)
+    
+    @staticmethod
     def update_problem(
-            self,
             problem: Problem,
             title: str | None = None,
             description: str | None = None,
@@ -45,7 +53,8 @@ class ProblemService:
         problem.save()
         return problem
 
-    def deactivate_problem(self, problem: Problem) -> Problem:
+    @staticmethod
+    def deactivate_problem(problem: Problem) -> Problem:
         problem.is_active = False
         problem.save()
         return problem
