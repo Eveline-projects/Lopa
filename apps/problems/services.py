@@ -1,5 +1,7 @@
+import uuid
 from django.core.exceptions import ValidationError
 from .models import Problem, DIFFICULTY_CHOICES
+from .repositories import ProblemRepository
 
 VALID_DIFFICULTY_KEYS = [choice[0] for choice in DIFFICULTY_CHOICES]
 
@@ -15,46 +17,36 @@ class ProblemService:
         if difficulty not in VALID_DIFFICULTY_KEYS:
             raise ValidationError('Invalid difficulty level')
 
-        return Problem.objects.create(
+        problem = Problem(
             title=title,
             description=description,
             difficulty=difficulty,
-            category=category,
+            category=category
         )
 
-    @staticmethod
-    def get_all_problems():
-        return Problem.objects.filter(is_active=True)
+        return ProblemRepository.save(problem)
 
-    @staticmethod
-    def get_problem_by_id(problem_id: int) -> Problem:
-        return Problem.objects.get(id=problem_id, is_active=True)
-    
     @staticmethod
     def update_problem(
             problem: Problem,
-            title: str | None = None,
-            description: str | None = None,
-            difficulty: str | None = None,
-            category: str | None = None,
+            **kwargs
     ) -> Problem:
-        if difficulty is not None and difficulty not in VALID_DIFFICULTY_KEYS:
+        difficulty = kwargs.get('difficulty')
+        if difficulty and difficulty not in VALID_DIFFICULTY_KEYS:
             raise ValidationError('Invalid difficulty level')
 
-        if title is not None:
-            problem.title = title
-        if description is not None:
-            problem.description = description
-        if difficulty is not None:
-            problem.difficulty = difficulty
-        if category is not None:
-            problem.category = category
-
-        problem.save()
-        return problem
+        clean_fields = {field: value for field, value in kwargs.items() if value is not None}
+        return ProblemRepository.update(problem, **clean_fields)
 
     @staticmethod
     def deactivate_problem(problem: Problem) -> Problem:
         problem.is_active = False
-        problem.save()
-        return problem
+        return ProblemRepository.save(problem)
+
+    @staticmethod
+    def get_all_problems():
+        return ProblemRepository.list_active()
+
+    @staticmethod
+    def get_problem_by_id(problem_id: uuid.UUID) -> Problem:
+        return ProblemRepository.get_active_by_id(problem_id)
