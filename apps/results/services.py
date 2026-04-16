@@ -7,8 +7,8 @@ STATUS_CHOICES_RESULT = Result.Status.values
 
 
 class ResultService:
+    @staticmethod
     def create_result(
-            self,
             submission: Submission,
             test_case: TestCase,
             actual_output: str = "",
@@ -29,8 +29,8 @@ class ResultService:
         result.save()
         return result
 
+    @staticmethod
     def update_result(
-            self,
             result: Result,
             status: str | None = None,
             actual_output: str | None = None,

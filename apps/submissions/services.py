@@ -7,8 +7,8 @@ STATUS_CHOICES_SUBMISSION = Submission.Status.values
 
 
 class SubmissionService:
+    @staticmethod
     def create_submission(
-            self,
             user: User,
             problem: Problem,
             code: str,

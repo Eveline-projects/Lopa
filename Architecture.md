@@ -42,5 +42,6 @@ Lopa/
 ├── manage.py                   # Django management script
 ├── pyproject.toml              # Dependency management (uv)
 ├── pytest.ini                  # Pytest configuration
-└── README.md                   # Main project documentation
+├──  README.md                  # Main project documentation
+└── uv.lock                    # Deterministic dependency lockfile
 ```
