@@ -29,14 +29,25 @@ class ProblemService:
     @staticmethod
     def update_problem(
             problem: Problem,
-            **kwargs
+            title: str | None = None,
+            description: str | None = None,
+            difficulty: str | None = None,
+            category: str | None = None,
     ) -> Problem:
-        difficulty = kwargs.get('difficulty')
-        if difficulty and difficulty not in VALID_DIFFICULTY_KEYS:
+        if difficulty is not None and difficulty not in VALID_DIFFICULTY_KEYS:
             raise ValidationError('Invalid difficulty level')
 
-        clean_fields = {field: value for field, value in kwargs.items() if value is not None}
-        return ProblemRepository.update(problem, **clean_fields)
+        update_data = {}
+        if title is not None:
+            update_data['title'] = title
+        if description is not None:
+            update_data['description'] = description
+        if difficulty is not None:
+            update_data['difficulty'] = difficulty
+        if category is not None:
+            update_data['category'] = category
+
+        return ProblemRepository.update(problem, **update_data)
 
     @staticmethod
     def deactivate_problem(problem: Problem) -> Problem:

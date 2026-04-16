@@ -10,16 +10,6 @@ class ProblemRepository:
         return problem
 
     @staticmethod
-    def create(title, description, difficulty, category) -> Problem:
-        problem = Problem(
-            title=title,
-            description=description,
-            difficulty=difficulty,
-            category=category,
-        )
-        return ProblemRepository.save(problem)
-
-    @staticmethod
     def list_active():
         return Problem.objects.filter(is_active=True)
 
@@ -29,7 +19,15 @@ class ProblemRepository:
 
     @staticmethod
     def update(problem: Problem, **fields) -> Problem:
+        if not fields:
+            return problem
+
+        allowed_fields = {'title', 'description', 'difficulty', 'category'}
+        
         for field, value in fields.items():
+            if field not in allowed_fields:
+                raise ValueError(f'Field {field} is not allowed to be updated.')
             # Apply only fields provided by the service layer.
             setattr(problem, field, value)
+
         return ProblemRepository.save(problem)

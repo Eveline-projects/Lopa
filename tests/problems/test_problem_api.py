@@ -79,7 +79,7 @@ class TestProblemApi:
         assert response.status_code == 404
         assert response.json()["detail"] == "Problem not found"
 
-    def test_create_problem_should_create_problem_and_return_200(self):
+    def test_create_problem_should_create_problem_and_return_201(self):
         payload = {
             "title": "Two Sum",
             "description": "Return indices of two numbers that add up to target",
@@ -89,7 +89,7 @@ class TestProblemApi:
 
         response = client.post("/", json=payload)
 
-        assert response.status_code == 200
+        assert response.status_code == 201
         data = response.json()
 
         assert data["title"] == payload["title"]
