@@ -20,3 +20,6 @@ class TestCase(models.Model):
 
     def __str__(self):
         return f"Test for {self.problem.title}"
+
+
+TestCase.__test__ = False

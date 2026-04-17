@@ -4,6 +4,8 @@ from .models import TestCase
 from apps.problems.models import Problem
 from django.core.exceptions import ValidationError
 
+from .repositories import TestCaseRepository
+
 
 class TestCaseService:
     @staticmethod
@@ -13,9 +15,10 @@ class TestCaseService:
             expected_output: str,
             is_hidden: bool = False
     ) -> TestCase:
-        if not input_data.strip():
+        if not input_data or not input_data.strip():
             raise ValidationError('Input data cannot be empty')
-        if not expected_output.strip():
+
+        if not expected_output or not expected_output.strip():
             raise ValidationError('Expected output cannot be empty')
 
         return TestCase.objects.create(
@@ -27,8 +30,8 @@ class TestCaseService:
 
     @staticmethod
     def get_test_cases_for_problem(problem_id: uuid.UUID) -> QuerySet[TestCase]:
-        return TestCase.objects.filter(problem_id=problem_id)
+        return TestCaseRepository.get_test_cases_for_problem(problem_id)
 
     @staticmethod
     def get_test_case_by_id(test_case_id: uuid.UUID) -> TestCase:
-        return TestCase.objects.get(id=test_case_id)
+        return TestCaseRepository.get_by_id(test_case_id)
