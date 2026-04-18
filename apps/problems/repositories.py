@@ -26,8 +26,14 @@ class ProblemRepository:
         
         for field, value in fields.items():
             if field not in allowed_fields:
-                raise ValueError(f'Field {field} is not allowed to be updated.')
+                raise ValueError(f"Field {field} is not allowed to be updated.")
             # Apply only fields provided by the service layer.
             setattr(problem, field, value)
 
         return ProblemRepository.save(problem)
+
+    @staticmethod
+    def deactivate(problem: Problem) -> None:
+        problem.is_active = False
+        ProblemRepository.save(problem)
+       

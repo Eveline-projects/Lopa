@@ -1,9 +1,10 @@
 import uuid
+from uuid import UUID
 from django.core.exceptions import ValidationError
 from .models import Problem, DIFFICULTY_CHOICES
 from .repositories import ProblemRepository
 
-VALID_DIFFICULTY_KEYS = [choice[0] for choice in DIFFICULTY_CHOICES]
+VALID_DIFFICULTY_KEYS = {choice[0] for choice in DIFFICULTY_CHOICES}
 
 
 class ProblemService:
@@ -50,9 +51,9 @@ class ProblemService:
         return ProblemRepository.update(problem, **update_data)
 
     @staticmethod
-    def deactivate_problem(problem: Problem) -> Problem:
-        problem.is_active = False
-        return ProblemRepository.save(problem)
+    def deactivate_problem(problem_id: UUID) -> None:
+        problem = ProblemRepository.get_active_by_id(problem_id)
+        ProblemRepository.deactivate(problem)
 
     @staticmethod
     def get_all_problems():
