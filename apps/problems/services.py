@@ -1,5 +1,6 @@
 import uuid
 from django.core.exceptions import ValidationError
+from apps.problems.exceptions import ProblemNotFound
 from .models import Problem, DIFFICULTY_CHOICES
 from .repositories import ProblemRepository
 
@@ -60,4 +61,7 @@ class ProblemService:
 
     @staticmethod
     def get_problem_by_id(problem_id: uuid.UUID) -> Problem:
-        return ProblemRepository.get_active_by_id(problem_id)
+        try:
+            return ProblemRepository.get_active_by_id(problem_id)
+        except Problem.DoesNotExist as exc:
+            raise ProblemNotFound('Problem not found') from exc
