@@ -1,5 +1,6 @@
-from django.core.exceptions import ValidationError
 import pytest
+from django.core.exceptions import ValidationError
+from apps.problems.exceptions import ProblemNotFound
 from apps.problems.services import ProblemService
 from apps.problems.models import Problem
 
@@ -76,7 +77,7 @@ class TestProblemService:
             is_active=False
         )
 
-        with pytest.raises(Problem.DoesNotExist):
+        with pytest.raises(ProblemNotFound, match='Problem not found'):
             ProblemService.get_problem_by_id(inactive_problem.id)
 
     def test_update_problem_should_update_only_provided_fields(self, problem: Problem):

@@ -2,7 +2,7 @@ from uuid import UUID
 from ninja import Router, Status
 from django.core.exceptions import ValidationError
 from ninja.errors import HttpError
-from .models import Problem
+from apps.problems.exceptions import ProblemNotFound
 from .schemas import ProblemSchema, ProblemCreateSchema
 from .services import ProblemService
 
@@ -18,7 +18,7 @@ def list_problems(request):
 def get_problem(request, problem_id: UUID):
     try:
         return ProblemService.get_problem_by_id(problem_id)
-    except Problem.DoesNotExist:
+    except ProblemNotFound:
         raise HttpError(404, 'Problem not found')
 
 
