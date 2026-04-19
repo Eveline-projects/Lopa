@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID
 from apps.problems.models import Problem
 
 
@@ -14,7 +14,11 @@ class ProblemRepository:
         return Problem.objects.filter(is_active=True)
 
     @staticmethod
-    def get_active_by_id(problem_id: uuid.UUID):
+    def get_by_id(problem_id: UUID) -> Problem:
+        return Problem.objects.get(id=problem_id)
+
+    @staticmethod
+    def get_active_by_id(problem_id: UUID) -> Problem:
         return Problem.objects.get(id=problem_id, is_active=True)
 
     @staticmethod
@@ -23,10 +27,10 @@ class ProblemRepository:
             return problem
 
         allowed_fields = {'title', 'description', 'difficulty', 'category'}
-        
+
         for field, value in fields.items():
             if field not in allowed_fields:
-                raise ValueError(f"Field {field} is not allowed to be updated.")
+                raise ValueError(f'Field {field} is not allowed to be updated.')
             # Apply only fields provided by the service layer.
             setattr(problem, field, value)
 
@@ -36,4 +40,3 @@ class ProblemRepository:
     def deactivate(problem: Problem) -> None:
         problem.is_active = False
         ProblemRepository.save(problem)
-       

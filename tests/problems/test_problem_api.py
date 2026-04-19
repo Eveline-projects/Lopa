@@ -110,7 +110,8 @@ class TestProblemApi:
 
         assert problem.is_active is False
         assert Problem.objects.count() == 1
-        
+        assert Problem.objects.filter(id=problem.id).exists()
+
     def test_patch_problem_should_update_selected_fields(self, problem):
         payload = {
             'title': 'Updated title',
@@ -144,9 +145,27 @@ class TestProblemApi:
 
         response = client.patch(f"/{problem.id}/", json=payload)
 
-        assert response.status_code in (400, 422)
+        assert response.status_code == 422
 
     def test_delete_problem_should_return_404_for_nonexistent_problem(self):
         response = client.delete('/11111111-1111-1111-1111-111111111111/')
 
         assert response.status_code == 404
+
+    def test_get_inactive_problem_should_return_404(self, problem):
+        problem.is_active = False
+        problem.save()
+
+        response = client.get(f"/{problem.id}/")
+
+        assert response.status_code == 404
+
+    def test_delete_problem_should_return_204_for_inactive_problem(self, problem):
+        problem.is_active = False
+        problem.save()
+
+        response = client.delete(f"/{problem.id}/")
+
+        assert response.status_code == 204
+        problem.refresh_from_db()
+        assert problem.is_active is False

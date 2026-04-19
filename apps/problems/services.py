@@ -1,4 +1,3 @@
-import uuid
 from uuid import UUID
 from django.core.exceptions import ValidationError
 from apps.problems.exceptions import ProblemNotFound
@@ -52,8 +51,7 @@ class ProblemService:
         return ProblemRepository.update(problem, **update_data)
 
     @staticmethod
-    def deactivate_problem(problem_id: UUID) -> None:
-        problem = ProblemRepository.get_active_by_id(problem_id)
+    def deactivate_problem(problem: Problem) -> None:
         ProblemRepository.deactivate(problem)
 
     @staticmethod
@@ -61,8 +59,15 @@ class ProblemService:
         return ProblemRepository.list_active()
 
     @staticmethod
-    def get_problem_by_id(problem_id: uuid.UUID) -> Problem:
+    def get_problem_by_id(problem_id: UUID) -> Problem:
         try:
             return ProblemRepository.get_active_by_id(problem_id)
+        except Problem.DoesNotExist as exc:
+            raise ProblemNotFound('Problem not found') from exc
+
+    @staticmethod
+    def get_problem_for_update_or_delete(problem_id: UUID) -> Problem:
+        try:
+            return ProblemRepository.get_by_id(problem_id)
         except Problem.DoesNotExist as exc:
             raise ProblemNotFound('Problem not found') from exc
