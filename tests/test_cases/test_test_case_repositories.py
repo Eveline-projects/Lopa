@@ -3,6 +3,7 @@ import pytest
 from apps.test_cases.models import TestCase
 from apps.test_cases.repositories import TestCaseRepository
 
+
 @pytest.mark.django_db
 class TestTestCaseRepository:
     def test_create_returns_saved_test_case(self, problem):

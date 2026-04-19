@@ -27,7 +27,7 @@ class TestCaseRepository:
         return TestCaseRepository.save(test_case)
 
     @staticmethod
-    def get_test_cases_for_problem(problem_id: uuid.UUID)-> QuerySet[TestCase]:
+    def get_test_cases_for_problem(problem_id: uuid.UUID) -> QuerySet[TestCase]:
         return TestCase.objects.filter(problem_id=problem_id).order_by("id")
 
     @staticmethod

@@ -5,4 +5,4 @@ from apps.test_cases.api import router as test_cases_router
 api = NinjaAPI(title="Lopa API")
 
 api.add_router('/problems', problems_router)
-api.add_router('/test_cases', test_cases_router)
+api.add_router('', test_cases_router)

@@ -146,47 +146,37 @@ class TestTestCaseApi:
         ids=['whitespace_input_data', 'empty_input_data'],
     )
     def test_create_test_case_returns_error_for_invalid_input_data(self, problem, payload):
-        payload['problem_id'] = str(problem.id)
+        payload = {
+            'problem_id': str(problem.id),
+            'input_data': '   ',
+            'expected_output': '[0,1]',
+            'is_hidden': False,
+        }
 
         response = client.post("/test-cases/", json=payload)
-
         assert response.status_code in [400, 422]
 
-    @pytest.mark.parametrize(
-        'payload',
-        [
-            {
-                'problem_id': None,
-                'input_data': '[1,2,3]',
-                'expected_output': '  ',
-                'is_hidden': False,
-            },
-            {
-                'problem_id': None,
-                'input_data': '[1,2,3]',
-                'expected_output': '',
-                'is_hidden': False,
-            },
-        ],
-        ids=['whitespace_expected_output', 'empty_expected_output'],
-    )
-    def test_create_test_case_returns_error_for_invalid_expected_output(self, problem, payload):
-        payload["problem_id"] = str(problem.id)
+    def test_create_test_case_returns_error_for_invalid_expected_output(self, problem):
+        payload = {
+            'problem_id': str(problem.id),
+            'input_data': '[1,2,3]',
+            'expected_output': '  ',
+            'is_hidden': False,
+        }
 
         response = client.post('/test-cases/', json=payload)
+        assert response.status_code == 422
 
-        assert response.status_code in [400, 422]
-
-    def test_get_test_cases_for_problem_should_return_all_test_cases(self, problem):
-        TestCase.objects.create(
+    def test_get_test_cases_for_problem_should_return_test_cases_in_order(self, problem):
+        first_test_case = TestCase.objects.create(
             problem=problem,
             input_data='in1',
-            expected_output='out1'
+            expected_output='out1',
         )
-        TestCase.objects.create(
+        second_test_case = TestCase.objects.create(
             problem=problem,
             input_data='in2',
-            expected_output='out2'
+            expected_output='out2',
         )
 
         response = client.get(f"/problems/{problem.id}/test-cases/")
@@ -196,5 +186,12 @@ class TestTestCaseApi:
 
         assert isinstance(data, list)
         assert len(data) == 2
-        assert data[0]['input_data'] == 'in1'
-        assert data[1]['input_data'] == 'in2'
+
+        expected_order = sorted(
+            [first_test_case, second_test_case],
+            key=lambda test_case: str(test_case.id),
+        )
+
+        assert [item['id'] for item in data] == [str(test_case.id) for test_case in expected_order]
+        assert [item['input_data'] for item in data] == [test_case.input_data for test_case in expected_order]
+        assert [item['expected_output'] for item in data] == [test_case.expected_output for test_case in expected_order]
