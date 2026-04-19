@@ -9,7 +9,7 @@ from apps.problems.models import Problem
 class TestTestCaseService:
     def test_create_test_case_should_set_correct_fields(self, problem):
         test_case = TestCaseService.create_test_case(
-            problem=problem,
+            problem_id=problem.id,
             input_data='2 + 2',
             expected_output='4',
             is_hidden=True
@@ -26,7 +26,7 @@ class TestTestCaseService:
 
         with pytest.raises(ValidationError):
             TestCaseService.create_test_case(
-                problem=problem,
+                problem_id=problem.id,
                 input_data='',
                 expected_output='4'
             )
@@ -35,7 +35,7 @@ class TestTestCaseService:
     def test_create_test_case_should_fail_on_empty_input(self, problem):
         with pytest.raises(ValidationError) as excinfo:
             TestCaseService.create_test_case(
-                problem=problem,
+                problem_id=problem.id,
                 input_data='  ',
                 expected_output='4',
             )
@@ -45,7 +45,7 @@ class TestTestCaseService:
     def test_create_test_case_should_fail_on_empty_expected_output(self, problem):
         with pytest.raises(ValidationError) as excinfo:
             TestCaseService.create_test_case(
-                problem=problem,
+                problem_id=problem.id,
                 input_data='2 + 2',
                 expected_output='  ',
             )
