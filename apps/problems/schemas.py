@@ -17,3 +17,10 @@ class ProblemCreateSchema(Schema):
     description: str
     difficulty: Literal['easy', 'medium', 'hard']
     category: str
+
+
+class ProblemUpdateSchema(Schema):
+    title: str | None = None
+    description: str | None = None
+    difficulty: Literal['easy', 'medium', 'hard'] | None = None
+    category: str | None = None

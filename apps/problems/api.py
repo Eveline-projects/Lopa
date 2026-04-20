@@ -3,7 +3,7 @@ from ninja import Router, Status
 from django.core.exceptions import ValidationError
 from ninja.errors import HttpError
 from apps.problems.exceptions import ProblemNotFound
-from .schemas import ProblemSchema, ProblemCreateSchema
+from .schemas import ProblemSchema, ProblemCreateSchema, ProblemUpdateSchema
 from .services import ProblemService
 
 router = Router()
@@ -29,3 +29,28 @@ def create_problem(request, data: ProblemCreateSchema):
         return Status(201, new_problem)
     except ValidationError as e:
         raise HttpError(422, e.messages[0])
+
+
+@router.patch('/{problem_id}/', response=ProblemSchema)
+def update_problem(request, problem_id: UUID, data: ProblemUpdateSchema):
+    try:
+        problem = ProblemService.get_problem_for_update_or_delete(problem_id)
+        updated_problem = ProblemService.update_problem(
+            problem,
+            **data.model_dump(exclude_unset=True)
+        )
+        return updated_problem
+    except ProblemNotFound:
+        raise HttpError(404, 'Problem not found')
+    except ValidationError as e:
+        raise HttpError(422, e.messages[0])
+
+
+@router.delete('/{problem_id}/', response={204: None})
+def delete_problem(request, problem_id: UUID):
+    try:
+        problem = ProblemService.get_problem_for_update_or_delete(problem_id)
+        ProblemService.deactivate_problem(problem)
+        return Status(204, None)
+    except ProblemNotFound:
+        raise HttpError(404, 'Problem not found')

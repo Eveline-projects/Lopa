@@ -1,10 +1,10 @@
-import uuid
+from uuid import UUID
 from django.core.exceptions import ValidationError
 from apps.problems.exceptions import ProblemNotFound
 from .models import Problem, DIFFICULTY_CHOICES
 from .repositories import ProblemRepository
 
-VALID_DIFFICULTY_KEYS = [choice[0] for choice in DIFFICULTY_CHOICES]
+VALID_DIFFICULTY_KEYS = {choice[0] for choice in DIFFICULTY_CHOICES}
 
 
 class ProblemService:
@@ -51,17 +51,23 @@ class ProblemService:
         return ProblemRepository.update(problem, **update_data)
 
     @staticmethod
-    def deactivate_problem(problem: Problem) -> Problem:
-        problem.is_active = False
-        return ProblemRepository.save(problem)
+    def deactivate_problem(problem: Problem) -> None:
+        ProblemRepository.deactivate(problem)
 
     @staticmethod
     def get_all_problems():
         return ProblemRepository.list_active()
 
     @staticmethod
-    def get_problem_by_id(problem_id: uuid.UUID) -> Problem:
+    def get_problem_by_id(problem_id: UUID) -> Problem:
         try:
             return ProblemRepository.get_active_by_id(problem_id)
+        except Problem.DoesNotExist as exc:
+            raise ProblemNotFound('Problem not found') from exc
+
+    @staticmethod
+    def get_problem_for_update_or_delete(problem_id: UUID) -> Problem:
+        try:
+            return ProblemRepository.get_by_id(problem_id)
         except Problem.DoesNotExist as exc:
             raise ProblemNotFound('Problem not found') from exc

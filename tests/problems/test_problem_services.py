@@ -105,7 +105,8 @@ class TestProblemService:
         problem.refresh_from_db()
         assert problem.difficulty == 'hard'
 
-    def test_delete_problem_should_deactivate_problem(self, problem: Problem):
-        ProblemService.deactivate_problem(problem=problem)
+    def test_deactivate_problem_should_set_is_active_false(self, problem: Problem):
+        assert problem.is_active is True
+        ProblemService.deactivate_problem(problem)
         problem.refresh_from_db()
         assert problem.is_active is False
