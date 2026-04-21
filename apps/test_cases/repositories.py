@@ -1,4 +1,4 @@
-import uuid
+from uuid import UUID
 from django.db.models import QuerySet
 from .models import TestCase
 from apps.problems.models import Problem
@@ -27,9 +27,9 @@ class TestCaseRepository:
         return TestCaseRepository.save(test_case)
 
     @staticmethod
-    def get_test_cases_for_problem(problem_id: uuid.UUID) -> QuerySet[TestCase]:
-        return TestCase.objects.filter(problem_id=problem_id).order_by("id")
+    def get_test_cases_for_problem(problem_id: UUID) -> QuerySet[TestCase]:
+        return TestCase.objects.filter(problem_id=problem_id).order_by('id')
 
     @staticmethod
-    def get_by_id(test_case_id: uuid.UUID) -> TestCase:
+    def get_by_id(test_case_id: UUID) -> TestCase:
         return TestCase.objects.get(id=test_case_id)
