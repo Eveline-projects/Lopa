@@ -2,8 +2,6 @@ from uuid import UUID
 from ninja import Router, Status
 from django.core.exceptions import ValidationError
 from ninja.errors import HttpError
-from .models import Problem
-from .schemas import ProblemSchema, ProblemCreateSchema, ProblemUpdateSchema
 from apps.problems.exceptions import ProblemNotFound
 from .schemas import ProblemSchema, ProblemCreateSchema, ProblemUpdateSchema
 from .services import ProblemService
