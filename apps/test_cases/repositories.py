@@ -13,22 +13,22 @@ class TestCaseRepository:
 
     @staticmethod
     def create(
-            problem: Problem,
-            input_data: str,
-            expected_output: str,
-            is_hidden: bool = False
+        problem: Problem, 
+        input_data: str, 
+        expected_output: str, 
+        is_hidden: bool = False
     ) -> TestCase:
         test_case = TestCase(
             problem=problem,
             input_data=input_data,
             expected_output=expected_output,
-            is_hidden=is_hidden
+            is_hidden=is_hidden,
         )
         return TestCaseRepository.save(test_case)
 
     @staticmethod
     def get_test_cases_for_problem(problem_id: UUID) -> QuerySet[TestCase]:
-        return TestCase.objects.filter(problem_id=problem_id).order_by('id')
+        return TestCase.objects.filter(problem_id=problem_id).order_by("id")
 
     @staticmethod
     def get_by_id(test_case_id: UUID) -> TestCase:
