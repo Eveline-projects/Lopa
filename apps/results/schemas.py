@@ -11,7 +11,6 @@ class ResultSchema(Schema):
         'PENDING',
         'PASSED',
         'WRONG_ANSWER',
-        'ERROR',
         'TIME_LIMIT_EXCEEDED',
         'RUNTIME_ERROR',
     ]
