@@ -17,11 +17,11 @@
             <a href="{% url 'home' %}" class="font-bold text-xl tracking-tight text-indigo-600">LOPA</a>
             <div class="space-x-4">
                 {% if user.is_authenticated %}
-                    <span class="text-sm text-slate-500">Cześć, {{ user.email }}!</span>
-                    <a href="{% url 'logout' %}" class="text-sm font-medium hover:text-indigo-600">Wyloguj</a>
+                    <span class="text-sm text-slate-500">Hi, {{ user.email }}!</span>
+                    <a href="{% url 'logout' %}" class="text-sm font-medium hover:text-indigo-600">Logout</a>
                 {% else %}
-                    <a href="{% url 'login' %}" class="text-sm font-medium hover:text-indigo-600">Zaloguj</a>
-                    <a href="{% url 'register' %}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">Rejestracja</a>
+                    <a href="{% url 'login' %}" class="text-sm font-medium hover:text-indigo-600">Sign in</a>
+                    <a href="{% url 'register' %}" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700">Register</a>
                 {% endif %}
             </div>
         </div>
@@ -33,7 +33,7 @@
     </main>
 
     <footer class="border-t border-slate-200 mt-20 py-8 text-center text-slate-400 text-xs">
-        &copy; 2026 LOPA Framework. Wszystkie prawa zastrzeżone.
+        &copy; 2026 LOPA Framework. All rights reserved.
     </footer>
 
 </body>
