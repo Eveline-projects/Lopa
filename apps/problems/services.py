@@ -1,4 +1,5 @@
 from uuid import UUID
+from django.db.models import QuerySet
 from django.core.exceptions import ValidationError
 from apps.problems.exceptions import ProblemNotFound
 from .models import Problem, DIFFICULTY_CHOICES
@@ -55,7 +56,7 @@ class ProblemService:
         ProblemRepository.deactivate(problem)
 
     @staticmethod
-    def get_all_problems():
+    def get_all_problems() -> QuerySet[Problem]:
         return ProblemRepository.list_active()
 
     @staticmethod
