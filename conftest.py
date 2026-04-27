@@ -11,7 +11,7 @@ def user(db):
     return User.objects.create_user(
         username='Adam',
         email='adam@gmail.com',
-        password='testpassword123'
+        password='testpassword123',
     )
 
 
@@ -51,4 +51,20 @@ def result(db, submission, test_case):
         test_case=test_case,
         actual_output='123',
         execution_time=0.2,
+    )
+
+
+@pytest.fixture
+def other_result(user, problem, test_case):
+    other_submission = Submission.objects.create(
+        user=user,
+        problem=problem,
+        code='print(2)',
+    )
+    return Result.objects.create(
+        submission=other_submission,
+        test_case=test_case,
+        status=Result.Status.WRONG_ANSWER,
+        actual_output='wrong answer',
+        execution_time=0.02,
     )

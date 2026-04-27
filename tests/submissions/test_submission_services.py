@@ -9,7 +9,7 @@ class TestSubmissionService:
     def test_create_submission_should_set_correct_fields(self, user, problem):
         new_submission = SubmissionService.create_submission(
             user=user,
-            problem=problem,
+            problem_id=problem.id,
             code='print("Hello World")',
         )
         assert new_submission.user == user
@@ -22,7 +22,7 @@ class TestSubmissionService:
 
         submission = SubmissionService.create_submission(
             user=user,
-            problem=problem,
+            problem_id=problem.id,
             code=code
         )
 
@@ -34,7 +34,7 @@ class TestSubmissionService:
         with pytest.raises(Exception):
             SubmissionService.create_submission(
                 user=None,
-                problem=problem,
+                problem_id=problem,
                 code='print(1)'
             )
 
@@ -42,7 +42,7 @@ class TestSubmissionService:
         initial_count = Submission.objects.count()
 
         with pytest.raises(ValidationError):
-            SubmissionService.create_submission(user=user, problem=problem, code=" ")
+            SubmissionService.create_submission(user=user, problem_id=problem, code=" ")
 
         assert Submission.objects.count() == initial_count
 
@@ -50,7 +50,7 @@ class TestSubmissionService:
         with pytest.raises(ValidationError):
             SubmissionService.create_submission(
                 user=user,
-                problem=problem,
+                problem_id=problem,
                 code='print("Hello World")',
                 status='SUPER_INVALID_STATUS'
             )

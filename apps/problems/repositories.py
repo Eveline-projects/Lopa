@@ -1,4 +1,5 @@
 from uuid import UUID
+from django.db.models import QuerySet
 from apps.problems.models import Problem
 
 
@@ -10,7 +11,7 @@ class ProblemRepository:
         return problem
 
     @staticmethod
-    def list_active():
+    def list_active() -> QuerySet[Problem]:
         return Problem.objects.filter(is_active=True)
 
     @staticmethod
