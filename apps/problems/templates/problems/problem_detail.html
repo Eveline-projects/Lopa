@@ -25,7 +25,7 @@
 	<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
 		<h2 class="text-xl font-semibold mb-4">Submit solution</h2>
 
-		<form id="submission-form" class="space-y-4">
+		<form id="submission-form" class="space-y-4" method="post">
 			{% csrf_token %}
 
 			<div>
@@ -66,14 +66,16 @@
 
 		if (!code) {
 			statusEl.textContent = "Code cannot be empty.";
-			statusEl.className = "text-sm text-red-600";
+			statusEl.className =
+				"mt-2 rounded bg-red-50 px-3 py-2 text-sm text-red-700";
 			return;
 		}
 
 		submitBtn.disabled = true;
 		submitBtn.textContent = "Submitting...";
 		statusEl.textContent = "Submitting solution...";
-		statusEl.className = "text-sm text-gray-600";
+		statusEl.className =
+			"mt-2 rounded bg-gray-50 px-3 py-2 text-sm text-gray-700";
 
 		try {
 			const response = await fetch(
@@ -91,19 +93,22 @@
 				},
 			);
 
-			console.log("STATUS:", response.status);
+			const contentType = response.headers.get("content-type") || "";
+			const isJson = contentType.includes("application/json");
+			const data = isJson ? await response.json() : null;
 
 			if (!response.ok) {
-				console.log("Submission endpoint is not available yet.");
-				throw new Error("Submission endpoint is not available yet.");
+				throw new Error(data?.detail || data?.message || "Submission failed.");
 			}
 
-			statusEl.textContent = "Submission request sent successfully.";
-			statusEl.className = "text-sm text-green-600";
+			statusEl.textContent = `Submission created successfully. Status: ${data.status}.`;
+			statusEl.className =
+				"mt-2 rounded bg-green-50 px-3 py-2 text-sm text-green-700";
 			codeInput.value = "";
 		} catch (error) {
 			statusEl.textContent = error.message || "Something went wrong.";
-			statusEl.className = "text-sm text-red-600";
+			statusEl.className =
+				"mt-2 rounded bg-red-50 px-3 py-2 text-sm text-red-700";
 		} finally {
 			submitBtn.disabled = false;
 			submitBtn.textContent = "Submit";
