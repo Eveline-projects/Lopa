@@ -19,6 +19,8 @@ Lopa (from the Polish "łopatologicznie" meaning straightforward or down-to-eart
 ### 🛠 Technologies:
 * **Language:** Python 3.13+ (via `uv`)
 * **Framework:** Django 6.0.x
+* **API Layer:** Django Ninja
+* **Schemas / Validation:** Django Ninja Schema (Pydantic-based)
 * **Package Manager:** uv (Extremely fast Python package installer and resolver)
 * **Database:** SQLite (dev/local)
 * **Testing:** Pytest 9.0.x with Pytest-Django
@@ -39,6 +41,7 @@ uv sync
 
 ### 2. Database configuration and startup
 You don't need to manually activate the virtual environment; uv run handles it for you.
+Lopa uses **Django** for the web application and **Django Ninja** for the API layer.
 ```bash
 # Run migrations
 uv run manage.py migrate 
@@ -48,16 +51,24 @@ uv run manage.py runserver
 ```
 
 The app is available at: `http://127.0.0.1:8000/`
+API documentation will be available at: `http://127.0.0.1:8000/api/docs`
 
 ## Data Architecture:
 The system is based on the logical interconnection of four pillars:
 
 | Model | Description                                                                        |
 | :--- |-----------------------------------------------------------------------------| 
-| **Problem** | Challenge definition: includes the task description, requirements specification, and assigned difficulty level.                            |
-| **TestCase** | Datasets: input vs. expected output.               |
-| **Submission** | The user's ID and their current status in the queue.                            |
-| **Result** | Detailed execution report: execution time and error messages for a single test. |
+| **Problem** | Challenge definition: includes the task description, requirements specification, and assigned difficulty level, and associated test cases.                            |
+| **TestCase** | Datasets: input vs. expected output for automated verification.               |
+| **Submission** | User solution: contains user code, associated problem, current status (`PENDING`, `DONE`, `WRONG_ANSWER`, `ERROR`), and evaluation results.                            |
+| **Result** | Test execution report: status per test case (`PASSED`, `WRONG_ANSWER`, `RUNTIME_ERROR`, etc.), execution time, and `actual_output`. |
+
+## API structure
+
+- `problems/` — problems management and public problem views
+- `submissions/` — create and fetch submissions
+- `results/` — fetch submission/test results
+- `test_cases/` — problem test cases
 
 ## Automated Testing
 The project prioritizes reliability, using uv to orchestrate tests using pytest.
@@ -69,8 +80,12 @@ uv run pytest
 uv run pytest -v
 ```
 ## Test Structure:
-- `tests/test_problems.py` – model and relationship validation.
-- `tests/test_engine.py` – code verification tests.
+The test suite is organized by application modules to reflect the project structure and keep tests easier to maintain.
+`tests/test_problems.py` – tests for the `Problem` model, validations, and problem-related logic.
+- `tests/test_test_cases.py` – tests for the `TestCase` creation, relationships, and expected input/output data.
+- `tests/test_submissions.py` – tests for the `Submission` creation, evaluation flow, and submission status updates.
+- `tests/test_results.py` – tests for `Result` creation and result status handling.
+- `tests/test_users.py` – tests for user-related models and logic.
 - `conftest.py` – common test data (fixtures).
 
 ## Project Roadmap:

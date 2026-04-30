@@ -6,22 +6,34 @@ Lopa/
 │   ├── problems/               # Domain: Problem management
 │   │   ├── migrations/
 │   │   ├── models.py           # Problem model
-│   │   ├── services.py         # Business logic (ProblemService)
+│   │   ├── api.py              # Django Ninja endpoints
+│   │   ├── repositories.py     # Data access and queries
+│   │   ├── schemas.py          # API schemas / validation
+│   │   ├── services.py         # Business logic
 │   │   └── ...
 │   ├── results/                # Domain: Evaluation & status tracking
 │   │   ├── migrations/
 │   │   ├── models.py           # Result model
-│   │   ├── services.py         # Business logic (ResultService)
+│   │   ├── api.py              # Django Ninja endpoints
+│   │   ├── repositories.py     # Data access and queries
+│   │   ├── schemas.py          # API schemas / validation
+│   │   ├── services.py         # Business logic
 │   │   └── ...
 │   ├── submissions/            # Domain: User code submissions
 │   │   ├── migrations/
 │   │   ├── models.py           # Submission model
-│   │   ├── services.py         # Business logic (SubmissionService)
+│   │   ├── api.py              # Django Ninja endpoints
+│   │   ├── repositories.py     # Data access and queries
+│   │   ├── schemas.py          # API schemas / validation
+│   │   ├── services.py         # Business logic
 │   │   └── ...
 │   ├── test_cases/             # Domain: Test data management
 │   │   ├── migrations/
 │   │   ├── models.py           # TestCase model
-│   │   ├── services.py         # Business logic (TestCaseService)
+│   │   ├── api.py              # Django Ninja endpoints
+│   │   ├── repositories.py     # Data access and queries
+│   │   ├── schemas.py          # API schemas / validation
+│   │   ├── services.py         # Business logic
 │   │   └── ...
 │   └── users/                  # Domain: User profiles & auth
 │       ├── migrations/
