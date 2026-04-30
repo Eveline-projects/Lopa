@@ -13,17 +13,17 @@ class Submission(models.Model):
     id = models.UUIDField(
         primary_key=True,
         default=uuid.uuid4,
-        editable=False
+        editable=False,
     )
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='submissions'
+        related_name='submissions',
     )
     problem = models.ForeignKey(
         'problems.Problem',
         on_delete=models.CASCADE,
-        related_name='submissions'
+        related_name='submissions',
     )
     code = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
