@@ -20,17 +20,11 @@ class TestSubmissionRepository:
         assert submission.code == '[4,5,6]'
         assert submission.status == Submission.Status.PENDING
 
-    def test_gest_submissions_for_problem_should_return_all_submissions(self, user, problem):
-        Submission.objects.create(
-            user=user,
-            problem=problem,
-            code='[1,2,3]'
-        )
-        Submission.objects.create(
-            user=user,
-            problem=problem,
-            code='[4,5,6]'
-        )
+    def test_gest_submissions_for_problem_should_return_all_submissions(
+        self, user, problem
+    ):
+        Submission.objects.create(user=user, problem=problem, code='[1,2,3]')
+        Submission.objects.create(user=user, problem=problem, code='[4,5,6]')
 
         queryset = SubmissionRepository.get_submissions_for_problem(problem.id)
         assert queryset.count() == 2
@@ -48,7 +42,9 @@ class TestSubmissionRepository:
         assert submission == created
         assert submission.status == Submission.Status.PENDING
 
-    def test_get_submissions_for_problem_should_not_include_other_problem_submissions(self, user, problem):
+    def test_get_submissions_for_problem_should_not_include_other_problem_submissions(
+        self, user, problem
+    ):
         other_problem = Problem.objects.create()
 
         first = Submission.objects.create(
@@ -67,14 +63,18 @@ class TestSubmissionRepository:
             code='[7,8,9]',
         )
 
-        submissions = list(SubmissionRepository.get_submissions_for_problem(problem.id))
+        submissions = list(
+            SubmissionRepository.get_submissions_for_problem(problem.id)
+        )
 
         assert len(submissions) == 2
         assert first in submissions
         assert second in submissions
         assert other_submission not in submissions
 
-    def test_get_submissions_for_problem_should_return_submissions_by_created_at(self, user, problem):
+    def test_get_submissions_for_problem_should_return_submissions_by_created_at(
+        self, user, problem
+    ):
         first = Submission.objects.create(
             user=user,
             problem=problem,
@@ -93,7 +93,9 @@ class TestSubmissionRepository:
         assert submissions[0].id == second.id
         assert submissions[1].id == first.id
 
-    def test_get_submissions_for_problem_should_return_submissions_ordered_by_created_at_desc(self, user, problem):
+    def test_get_submissions_for_problem_should_return_submissions_ordered_by_created_at_desc(
+        self, user, problem
+    ):
         first = Submission.objects.create(
             user=user,
             problem=problem,
@@ -113,5 +115,6 @@ class TestSubmissionRepository:
         assert submissions[1] == first
 
     def test_get_by_id_raises_does_not_exist(self):
-        with pytest.raises(Submission.DoesNotExist):
-            SubmissionRepository.get_by_id(uuid.uuid4())
+        submission = SubmissionRepository.get_by_id(uuid.uuid4())
+
+        assert submission is None

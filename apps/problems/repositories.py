@@ -1,5 +1,6 @@
 from uuid import UUID
 from django.db.models import QuerySet
+from typing import Optional
 from apps.problems.models import Problem
 
 
@@ -11,16 +12,23 @@ class ProblemRepository:
         return problem
 
     @staticmethod
+    def _get_optional(**filters) -> Optional[Problem]:
+        try:
+            return Problem.objects.get(**filters)
+        except Problem.DoesNotExist:
+            return None
+
+    @staticmethod
     def list_active() -> QuerySet[Problem]:
         return Problem.objects.filter(is_active=True)
 
     @staticmethod
-    def get_by_id(problem_id: UUID) -> Problem:
-        return Problem.objects.get(id=problem_id)
+    def get_by_id(problem_id: UUID) -> Optional[Problem]:
+        return ProblemRepository._get_optional(id=problem_id)
 
     @staticmethod
-    def get_active_by_id(problem_id: UUID) -> Problem:
-        return Problem.objects.get(id=problem_id, is_active=True)
+    def get_active_by_id(problem_id: UUID) -> Optional[Problem]:
+        return ProblemRepository._get_optional(id=problem_id, is_active=True)
 
     @staticmethod
     def update(problem: Problem, **fields) -> Problem:
@@ -31,7 +39,9 @@ class ProblemRepository:
 
         for field, value in fields.items():
             if field not in allowed_fields:
-                raise ValueError(f'Field {field} is not allowed to be updated.')
+                raise ValueError(
+                    f'Field {field} is not allowed to be updated.'
+                )
             # Apply only fields provided by the service layer.
             setattr(problem, field, value)
 

@@ -136,8 +136,13 @@
 										let badgeClasses = "bg-yellow-100 text-yellow-800";
 										if (status === "PASSED") {
 											badgeClasses = "bg-green-100 text-green-800";
-										} else if (status === "FAILED") {
+										} else if (
+											status === "WRONG_ANSWER" ||
+											status === "RUNTIME_ERROR"
+										) {
 											badgeClasses = "bg-red-100 text-red-800";
+										} else if (status === "TIME_LIMIT_EXCEEDED") {
+											badgeClasses = "bg-orange-100 text-orange-800";
 										}
 
 										return `

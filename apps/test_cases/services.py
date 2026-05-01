@@ -13,15 +13,15 @@ from .repositories import TestCaseRepository
 class TestCaseService:
     @staticmethod
     def create_test_case(
-            problem_id: UUID,
-            input_data: str,
-            expected_output: str,
-            is_hidden: bool = False
+        problem_id: UUID,
+        input_data: str,
+        expected_output: str,
+        is_hidden: bool = False,
     ) -> TestCase:
-        try:
-            problem = ProblemRepository.get_active_by_id(problem_id)
-        except Problem.DoesNotExist as exc:
-            raise ProblemNotFound('Problem not found') from exc
+
+        problem = ProblemRepository.get_active_by_id(problem_id)
+        if not problem:
+            raise ProblemNotFound('Problem not found')
 
         return TestCaseRepository.create(
             problem=problem,
@@ -31,9 +31,14 @@ class TestCaseService:
         )
 
     @staticmethod
-    def get_test_cases_for_problem(problem_id: uuid.UUID) -> QuerySet[TestCase]:
+    def get_test_cases_for_problem(
+        problem_id: uuid.UUID,
+    ) -> QuerySet[TestCase]:
         return TestCaseRepository.get_test_cases_for_problem(problem_id)
 
     @staticmethod
     def get_test_case_by_id(test_case_id: uuid.UUID) -> TestCase:
-        return TestCaseRepository.get_by_id(test_case_id)
+        test_case = TestCaseRepository.get_by_id(test_case_id)
+        if not test_case:
+            raise TestCase.DoesNotExist('TestCase {test_case_id} not found')
+        return test_case

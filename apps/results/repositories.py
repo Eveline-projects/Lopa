@@ -1,5 +1,6 @@
 from uuid import UUID
 from django.db.models import QuerySet
+from typing import Optional
 
 from .models import Result
 from apps.test_cases.models import TestCase
@@ -31,8 +32,11 @@ class ResultRepository:
         return ResultRepository.save(result)
 
     @staticmethod
-    def get_by_id(result_id: UUID) -> Result:
-        return Result.objects.get(id=result_id)
+    def get_by_id(result_id: UUID) -> Optional[Result]:
+        try:
+            return Result.objects.get(id=result_id)
+        except Result.DoesNotExist:
+            return None
 
     @staticmethod
     def get_results_for_submission(submission_id: UUID) -> QuerySet[Result]:

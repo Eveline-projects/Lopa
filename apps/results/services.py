@@ -55,4 +55,9 @@ class ResultService:
 
     @staticmethod
     def get_result_by_id(result_id: UUID) -> Result:
-        return ResultRepository.get_by_id(result_id)
+        result = ResultRepository.get_by_id(result_id)
+
+        if not result:
+            raise Result.DoesNotExist(f'Result with id {result_id} not found')
+
+        return result

@@ -25,10 +25,9 @@ class SubmissionService:
         if not code.strip():
             raise ValidationError('Code cannot be empty')
 
-        try:
-            problem = ProblemRepository.get_active_by_id(problem_id)
-        except Problem.DoesNotExist as exc:
-            raise ProblemNotFound('Problem not found') from exc
+        problem = ProblemRepository.get_active_by_id(problem_id)
+        if not problem:
+            raise ProblemNotFound('Problem not found')
 
         submission = SubmissionRepository.create(
             user=user,
@@ -38,11 +37,18 @@ class SubmissionService:
         )
         SubmissionEvaluationService.evaluate(submission)
 
-        return SubmissionRepository.get_by_id(submission.id)
+        return submission
 
     @staticmethod
     def get_submission_by_id(submission_id: UUID) -> Submission:
-        return SubmissionRepository.get_by_id(submission_id)
+        submission = SubmissionRepository.get_by_id(submission_id)
+
+        if not submission:
+            raise Submission.DoesNotExist(
+                f'Submission {submission_id} not found'
+            )
+
+        return submission
 
     @staticmethod
     def get_submissions_for_problem(problem_id: UUID) -> QuerySet[Submission]:

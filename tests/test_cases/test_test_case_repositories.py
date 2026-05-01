@@ -47,5 +47,6 @@ class TestTestCaseRepository:
         assert test_case == created
 
     def test_get_by_id_raises_does_not_exist(self):
-        with pytest.raises(TestCase.DoesNotExist):
-            TestCaseRepository.get_by_id(uuid.uuid4())
+        test_case = TestCaseRepository.get_by_id(uuid.uuid4())
+
+        assert test_case is None

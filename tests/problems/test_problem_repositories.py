@@ -6,21 +6,28 @@ from apps.problems.repositories import ProblemRepository
 
 @pytest.mark.django_db
 class TestProblemRepository:
-    def test_get_active_by_id_should_return_only_active_problem(self, problem: Problem):
+    def test_get_active_by_id_should_return_only_active_problem(
+        self, problem: Problem
+    ):
         assert problem.is_active is True
 
         found = ProblemRepository.get_active_by_id(problem.id)
 
         assert found == problem
 
-    def test_get_active_by_id_should_raise_for_inactive_problem(self, problem: Problem):
+    def test_get_active_by_id_should_raise_for_inactive_problem(
+        self, problem: Problem
+    ):
         problem.is_active = False
         problem.save()
 
-        with pytest.raises(Problem.DoesNotExist):
-            ProblemRepository.get_active_by_id(problem.id)
+        problem = ProblemRepository.get_active_by_id(problem.id)
 
-    def test_get_by_id_should_return_active_or_inactive_problem(self, problem: Problem):
+        assert problem is None
+
+    def test_get_by_id_should_return_active_or_inactive_problem(
+        self, problem: Problem
+    ):
         inactive = Problem.objects.create(
             title='Inactive problem',
             description='Inactive',
@@ -34,17 +41,17 @@ class TestProblemRepository:
 
     def test_list_active_should_return_only_active_problems(self):
         active = Problem.objects.create(
-            title="Active",
-            description="Active",
-            difficulty="easy",
-            category="arrays",
+            title='Active',
+            description='Active',
+            difficulty='easy',
+            category='arrays',
             is_active=True,
         )
         Problem.objects.create(
-            title="Inactive",
-            description="Inactive",
-            difficulty="medium",
-            category="strings",
+            title='Inactive',
+            description='Inactive',
+            difficulty='medium',
+            category='strings',
             is_active=False,
         )
 
@@ -55,10 +62,10 @@ class TestProblemRepository:
 
     def test_save_should_run_full_clean(self):
         problem = Problem(
-            title="Invalid",
-            description="Too short",
-            difficulty="invalid_difficulty",
-            category="arrays",
+            title='Invalid',
+            description='Too short',
+            difficulty='invalid_difficulty',
+            category='arrays',
             is_active=True,
         )
 
@@ -67,10 +74,10 @@ class TestProblemRepository:
 
     def test_update_should_only_allow_whitelisted_fields(self):
         problem = Problem.objects.create(
-            title="Original",
-            description="Original",
-            difficulty="easy",
-            category="arrays",
+            title='Original',
+            description='Original',
+            difficulty='easy',
+            category='arrays',
             is_active=True,
         )
 
