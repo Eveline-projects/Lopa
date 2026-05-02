@@ -9,6 +9,7 @@ from apps.users.models import User
 from .repositories import SubmissionRepository
 from apps.problems.repositories import ProblemRepository
 from apps.problems.exceptions import ProblemNotFound
+from .status_services import SubmissionEvaluationService
 
 STATUS_CHOICES_SUBMISSION = Submission.Status.values
 
@@ -16,10 +17,7 @@ STATUS_CHOICES_SUBMISSION = Submission.Status.values
 class SubmissionService:
     @staticmethod
     def create_submission(
-            user: User,
-            problem_id: UUID,
-            code: str,
-            status=None
+        user: User, problem_id: UUID, code: str, status=None
     ) -> Submission:
         if status is None:
             status = Submission.Status.PENDING
@@ -27,21 +25,30 @@ class SubmissionService:
         if not code.strip():
             raise ValidationError('Code cannot be empty')
 
-        try:
-            problem = ProblemRepository.get_active_by_id(problem_id)
-        except Problem.DoesNotExist as exc:
-            raise ProblemNotFound('Problem not found') from exc
+        problem = ProblemRepository.get_active_by_id(problem_id)
+        if not problem:
+            raise ProblemNotFound('Problem not found')
 
-        return SubmissionRepository.create(
+        submission = SubmissionRepository.create(
             user=user,
             problem=problem,
             code=code,
             status=status,
         )
+        SubmissionEvaluationService.evaluate(submission)
+
+        return submission
 
     @staticmethod
     def get_submission_by_id(submission_id: UUID) -> Submission:
-        return SubmissionRepository.get_by_id(submission_id)
+        submission = SubmissionRepository.get_by_id(submission_id)
+
+        if not submission:
+            raise Submission.DoesNotExist(
+                f'Submission {submission_id} not found'
+            )
+
+        return submission
 
     @staticmethod
     def get_submissions_for_problem(problem_id: UUID) -> QuerySet[Submission]:

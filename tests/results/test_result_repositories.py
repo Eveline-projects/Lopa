@@ -47,5 +47,6 @@ class TestResultRepository:
     ):
         nonexistent_id = UUID('11111111-1111-1111-1111-111111111111')
 
-        with pytest.raises(Result.DoesNotExist):
-            ResultRepository.get_by_id(nonexistent_id)
+        result = ResultRepository.get_by_id(nonexistent_id)
+
+        assert result is None

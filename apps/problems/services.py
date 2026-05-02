@@ -11,10 +11,7 @@ VALID_DIFFICULTY_KEYS = {choice[0] for choice in DIFFICULTY_CHOICES}
 class ProblemService:
     @staticmethod
     def create_problem(
-            title: str,
-            description: str,
-            difficulty: str,
-            category: str
+        title: str, description: str, difficulty: str, category: str
     ) -> Problem:
         if difficulty not in VALID_DIFFICULTY_KEYS:
             raise ValidationError('Invalid difficulty level')
@@ -23,18 +20,18 @@ class ProblemService:
             title=title,
             description=description,
             difficulty=difficulty,
-            category=category
+            category=category,
         )
 
         return ProblemRepository.save(problem)
 
     @staticmethod
     def update_problem(
-            problem: Problem,
-            title: str | None = None,
-            description: str | None = None,
-            difficulty: str | None = None,
-            category: str | None = None,
+        problem: Problem,
+        title: str | None = None,
+        description: str | None = None,
+        difficulty: str | None = None,
+        category: str | None = None,
     ) -> Problem:
         if difficulty is not None and difficulty not in VALID_DIFFICULTY_KEYS:
             raise ValidationError('Invalid difficulty level')
@@ -61,14 +58,16 @@ class ProblemService:
 
     @staticmethod
     def get_problem_by_id(problem_id: UUID) -> Problem:
-        try:
-            return ProblemRepository.get_active_by_id(problem_id)
-        except Problem.DoesNotExist as exc:
-            raise ProblemNotFound('Problem not found') from exc
+        problem = ProblemRepository.get_active_by_id(problem_id)
+        if not problem:
+            raise ProblemNotFound('Problem not found')
+
+        return problem
 
     @staticmethod
     def get_problem_for_update_or_delete(problem_id: UUID) -> Problem:
-        try:
-            return ProblemRepository.get_by_id(problem_id)
-        except Problem.DoesNotExist as exc:
-            raise ProblemNotFound('Problem not found') from exc
+        problem = ProblemRepository.get_by_id(problem_id)
+        if not problem:
+            raise ProblemNotFound('Problem not found')
+
+        return problem
