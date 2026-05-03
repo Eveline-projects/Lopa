@@ -55,7 +55,7 @@ def result(db, submission, test_case):
 
 
 @pytest.fixture
-def other_result(user, problem, test_case):
+def other_result(db, user, problem, test_case):
     other_submission = Submission.objects.create(
         user=user,
         problem=problem,
