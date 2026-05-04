@@ -42,17 +42,9 @@ class SubmissionEvaluationService:
 
         for test_case in test_cases:
             code = submission.code.strip()
-            normalized_code = code.lower()
             expected_output = test_case.expected_output.strip()
 
-            if normalized_code == '__force_runtime_error__':
-                result_status = Result.Status.RUNTIME_ERROR
-                actual_output = 'Runtime Error: Forced via magic string'
-            elif normalized_code == '__force_timeout__':
-                result_status = Result.Status.TIME_LIMIT_EXCEEDED
-                actual_output = 'Time Limit Exceeded'
-
-            elif code == expected_output:
+            if code == expected_output:
                 result_status = Result.Status.PASSED
                 actual_output = code
             else:
