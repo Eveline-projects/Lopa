@@ -21,4 +21,6 @@ def get_result(request, result_id: UUID):
     'submissions/{submission_id}/results/', response=list[ResultSchema]
 )
 def get_results_for_submission(request, submission_id: UUID):
-    return ResultService.get_results_for_submission(submission_id)
+    return ResultService.get_results_for_submission(
+        submission_id, request.user
+    )

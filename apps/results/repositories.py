@@ -39,5 +39,9 @@ class ResultRepository:
             return None
 
     @staticmethod
-    def get_results_for_submission(submission_id: UUID) -> QuerySet[Result]:
-        return Result.objects.filter(submission_id=submission_id)
+    def get_results_for_submission(
+        submission_id: UUID, user
+    ) -> QuerySet[Result]:
+        return Result.objects.filter(
+            submission_id=submission_id, submission__user=user
+        )

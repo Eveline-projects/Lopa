@@ -50,8 +50,10 @@ class ResultService:
         return ResultRepository.save(result)
 
     @staticmethod
-    def get_results_for_submission(submission_id: UUID) -> QuerySet[Result]:
-        return ResultRepository.get_results_for_submission(submission_id)
+    def get_results_for_submission(
+        submission_id: UUID, user
+    ) -> QuerySet[Result]:
+        return ResultRepository.get_results_for_submission(submission_id, user)
 
     @staticmethod
     def get_result_by_id(result_id: UUID) -> Result:
