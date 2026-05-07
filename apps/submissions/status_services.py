@@ -44,14 +44,7 @@ class SubmissionEvaluationService:
             code = submission.code.strip()
             expected_output = test_case.expected_output.strip()
 
-            if 'error' in code.lower():
-                result_status = Result.Status.RUNTIME_ERROR
-                actual_output = 'Runtime Error: Invalid code'
-            elif 'timeout' in code.lower():
-                result_status = Result.Status.TIME_LIMIT_EXCEEDED
-                actual_output = 'Time Limit Exceeded'
-
-            elif code == expected_output:
+            if code == expected_output:
                 result_status = Result.Status.PASSED
                 actual_output = code
             else:
