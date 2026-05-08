@@ -13,9 +13,9 @@ class ResultListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         submission_id = self.kwargs['submission_id']
-        return Result.objects.filter(submission_id=submission_id).order_by(
-            'id'
-        )
+        return Result.objects.filter(
+            submission_id=submission_id, submission__user=self.request.user
+        ).order_by('id')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -23,7 +23,9 @@ class ResultListView(LoginRequiredMixin, ListView):
             context['submission'] = SubmissionService.get_submission_by_id(
                 self.kwargs['submission_id']
             )
-        except Submission.DoesNotExist:
+            if context['submission'].user != self.request.user:
+                raise Http404('Access denied')
+        except (Submission.DoesNotExist, AttributeError):
             raise Http404('Submission not found')
 
         return context
@@ -32,7 +34,12 @@ class ResultListView(LoginRequiredMixin, ListView):
 class ResultDetailView(LoginRequiredMixin, DetailView):
     model = Result
     template_name = 'results/result_detail.html'
-    context_objects_name = 'result'
+    context_object_name = 'result'
+
+    def get_queryset(self):
+        return Result.objects.select_related('submission', 'test_case').filter(
+            submission__user=self.request.user
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

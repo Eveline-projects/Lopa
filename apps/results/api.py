@@ -12,7 +12,7 @@ router = Router()
 @router.get('results/{result_id}/', response=ResultSchema)
 def get_result(request, result_id: UUID):
     try:
-        return ResultService.get_result_by_id(result_id)
+        return ResultService.get_result_by_id(result_id, user=request.user)
     except Result.DoesNotExist:
         raise HttpError(404, 'Result does not exist')
 

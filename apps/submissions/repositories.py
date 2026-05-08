@@ -41,3 +41,9 @@ class SubmissionRepository:
         return Submission.objects.filter(problem_id=problem_id).order_by(
             '-created_at'
         )
+
+    @staticmethod
+    def get_solved_subquery_for_user(user: User) -> QuerySet[Submission]:
+        return Submission.objects.filter(
+            user=user, status=Submission.StatusDONE
+        )
