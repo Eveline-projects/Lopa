@@ -1,10 +1,13 @@
 from uuid import UUID
 from django.db.models import QuerySet
+from django.contrib.auth import get_user_model
 from typing import Optional
 
 from .models import Result
 from apps.test_cases.models import TestCase
 from apps.submissions.models import Submission
+
+User = get_user_model()
 
 
 class ResultRepository:
@@ -32,12 +35,16 @@ class ResultRepository:
         return ResultRepository.save(result)
 
     @staticmethod
-    def get_by_id(result_id: UUID) -> Optional[Result]:
+    def get_by_id(result_id: UUID, user: User) -> Optional[Result]:
         try:
-            return Result.objects.get(id=result_id)
+            return Result.objects.get(id=result_id, submission__user=user)
         except Result.DoesNotExist:
             return None
 
     @staticmethod
-    def get_results_for_submission(submission_id: UUID) -> QuerySet[Result]:
-        return Result.objects.filter(submission_id=submission_id)
+    def get_results_for_submission(
+        submission_id: UUID, user: User
+    ) -> QuerySet[Result]:
+        return Result.objects.filter(
+            submission_id=submission_id, submission__user=user
+        )

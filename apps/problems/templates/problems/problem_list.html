@@ -1,45 +1,53 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %} 
+{% block content %}
 <div class="max-w-5xl mx-auto p-6 md:p-8">
-	<div class="mb-8">
-		<h1 class="text-2xl md:text-3xl font-bold">Problems</h1>
-		<p class="text-gray-600 mt-2">
-			Browse available coding problems and open details to submit your solution.
-		</p>
-	</div>
+    <div class="mb-8">
+        <h1 class="text-2xl md:text-3xl font-bold">Problems</h1>
+        <p class="text-gray-600 mt-2">
+            Browse available coding problems and open details to submit your solution.
+        </p>
+    </div>
 
-	<div class="grid gap-4">
-		{% for problem in problems %}
-		<a
-			href="{% url 'problems:problem_detail' problem.id %}"
-			class="block rounded-lg border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition"
-		>
-			<div
-				class="flex flex-col gap-2 md:flex-row md:items-center md:justify-between"
-			>
-				<h2 class="text-lg font-semibold">{{ problem.title }}</h2>
-				<div class="flex gap-2 text-sm">
-					<span class="rounded bg-gray-100 px-2 py-1"
-						>{{ problem.difficulty }}</span
-					>
-					<span class="rounded bg-gray-100 px-2 py-1"
-						>{{ problem.category }}</span
-					>
-				</div>
-			</div>
-			<p class="mt-3 text-sm text-gray-600">
-				{{ problem.description|truncatechars:140 }}
-			</p>
-		</a>
-		{% empty %}
-		<div
-			class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center"
-		>
-			<h2 class="text-lg font-semibold">No problems available</h2>
-			<p class="mt-2 text-gray-600">
-				There are currently no active problems to display.
-			</p>
-		</div>
-		{% endfor %}
-	</div>
+    <div class="grid gap-4">
+        {% for problem in problems %}
+        <div class="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md transition">
+            
+            <div class="flex items-center gap-4">
+                {% if problem.is_solved %}
+                    <div class="bg-green-100 p-2 rounded-full text-green-600" title="Solved">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                {% else %}
+                    <div class="bg-gray-50 p-2 rounded-full text-gray-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2"/>
+                        </svg>
+                    </div>
+                {% endif %}
+
+                <div>
+                    <h2 class="text-lg font-bold text-gray-800">{{ problem.title }}</h2>
+                    <div class="flex gap-2 text-xs mt-1">
+                        <span class="font-semibold text-indigo-600 uppercase tracking-wider">{{ problem.difficulty }}</span>
+                        <span class="text-gray-400">•</span>
+                        <span class="text-gray-500">{{ problem.category }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <a href="{% url 'problems:problem_detail' problem.id %}" 
+               class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition">
+                Solve →
+            </a>
+        </div>
+        {% empty %}
+        <div class="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
+            <h2 class="text-lg font-semibold">No problems available</h2>
+            <p class="mt-2 text-gray-600">There are currently no active problems to display.</p>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}

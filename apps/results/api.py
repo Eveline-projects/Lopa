@@ -12,7 +12,7 @@ router = Router()
 @router.get('results/{result_id}/', response=ResultSchema)
 def get_result(request, result_id: UUID):
     try:
-        return ResultService.get_result_by_id(result_id)
+        return ResultService.get_result_by_id(result_id, user=request.user)
     except Result.DoesNotExist:
         raise HttpError(404, 'Result does not exist')
 
@@ -21,4 +21,6 @@ def get_result(request, result_id: UUID):
     'submissions/{submission_id}/results/', response=list[ResultSchema]
 )
 def get_results_for_submission(request, submission_id: UUID):
-    return ResultService.get_results_for_submission(submission_id)
+    return ResultService.get_results_for_submission(
+        submission_id, request.user
+    )

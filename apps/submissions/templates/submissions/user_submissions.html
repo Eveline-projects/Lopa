@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %}LOPA | My Submissions{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto p-6 md:p-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-extrabold text-slate-900">Submission History</h1>
+        <p class="text-slate-500">Track your progress and review previous attempts.</p>
+    </div>
+
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-50 border-b border-slate-100">
+                <tr>
+                    <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                    <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Problem</th>
+                    <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Language</th>
+                    <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Submitted</th>
+                    <th class="p-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Action</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for sub in submissions %}
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-4">
+                        <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase 
+                            {% if sub.status == 'DONE' %} bg-green-100 text-green-700
+                            {% elif sub.status == 'ERROR' or sub.status == 'WRONG_ANSWER' %} bg-red-100 text-red-700
+                            {% else %} bg-yellow-100 text-yellow-700 {% endif %}">
+                            {{ sub.status }}
+                        </span>
+                    </td>
+                    <td class="p-4">
+                        <span class="text-sm font-bold text-slate-800">{{ sub.problem.title }}</span>
+                    </td>
+                    <td class="p-4 text-xs text-slate-500 font-mono">Python 3</td>
+                    <td class="p-4 text-xs text-slate-500">
+                        {{ sub.created_at|date:"Y-m-d H:i" }}
+                    </td>
+                    <td class="p-4">
+                        <a href="{% url 'results:submission_results' sub.id %}" class="text-indigo-600 hover:text-indigo-800 font-bold text-xs uppercase tracking-widest">
+                            View Details →
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="p-12 text-center text-slate-400 italic">
+                        No submissions yet. Time to solve some problems!
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
