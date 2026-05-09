@@ -71,3 +71,33 @@ class ProblemService:
             raise ProblemNotFound('Problem not found')
 
         return problem
+
+    @staticmethod
+    def seed_problem(
+        title: str,
+        description: str,
+        difficulty: str,
+        category: str,
+        is_active: bool = True,
+    ) -> tuple[Problem, bool]:
+        existing_problem = ProblemRepository.get_by_title(title)
+
+        if existing_problem:
+            updated = ProblemService.update_problem(
+                problem=existing_problem,
+                description=description,
+                difficulty=difficulty,
+                category=category,
+            )
+            if is_active and not updated.is_active:
+                updated.is_active = True
+                ProblemRepository.save(updated)
+
+            return updated, False
+        new_problem = Problem.Service.create_problem(
+            title=title,
+            description=description,
+            difficulty=difficulty,
+            category=category,
+        )
+        return new_problem, True

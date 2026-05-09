@@ -45,5 +45,5 @@ class SubmissionRepository:
     @staticmethod
     def get_solved_subquery_for_user(user: User) -> QuerySet[Submission]:
         return Submission.objects.filter(
-            user=user, status=Submission.StatusDONE
+            user=user, status=Submission.Status.DONE
         )

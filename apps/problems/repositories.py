@@ -51,3 +51,7 @@ class ProblemRepository:
     def deactivate(problem: Problem) -> None:
         problem.is_active = False
         ProblemRepository.save(problem)
+
+    @staticmethod
+    def get_by_title(title: str) -> Optional[Problem]:
+        return ProblemRepository._get_optional(title=title)
