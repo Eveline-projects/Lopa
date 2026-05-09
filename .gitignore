@@ -23,6 +23,9 @@ playwright-report/
 blob-report/
 playwright-artifacts/
 
+# Test reports
+report.html
+
 # Distribution / packaging
 .Python
 build/
