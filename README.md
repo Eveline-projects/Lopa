@@ -23,9 +23,11 @@ Lopa (from the Polish "łopatologicznie" meaning straightforward or down-to-eart
 * **Schemas / Validation:** Django Ninja Schema (Pydantic-based)
 * **Package Manager:** uv (Extremely fast Python package installer and resolver)
 * **Database:** SQLite (dev/local)
-* **Testing:** Pytest 9.0.x with Pytest-Django
+* **Testing:** Pytest 9.0.x with Pytest-Django & Playwright (E2E)
+* **Reporting** pytest-html
 * **Configuration:** `pyproject.toml` & `uv.lock` (Modern dependency management)
 * **Environment:** Django-environ (Configuration via `.env`)
+* **Code Quality:** Ruff
 
 ## Quick Start
 ### 1. Installation
@@ -53,6 +55,23 @@ uv run manage.py runserver
 The app is available at: `http://127.0.0.1:8000/`
 API documentation will be available at: `http://127.0.0.1:8000/api/docs`
 
+### 3. Populating the Database (Seeding)
+To quickly get started with sample data (e.g., Two Sum, Palindrome tasks), use the custom management command. This will load problems from a JSON file using the service layer to ensure data integrity.
+```bash
+# Load initial algorithm problems
+uv run manage.py load_problems initial_problems.json
+```
+### 4. Frontend & User Interface
+Lopa uses Django Templates with Tailwind CSS (via CDN for development) to provide a clean and responsive UI. No separate frontend build steps (like npm/yarn) are required for the basic setup.
+
+View Problems: Navigate to http://127.0.0.1:8000/problems/ to see the list of loaded tasks.
+
+Admin Panel: Access the database directly at http://127.0.0.1:8000/admin/ (requires creating a superuser).
+```bash
+# Create a superuser to access the admin panel
+uv run manage.py createsuperuser
+```
+
 ## Data Architecture:
 The system is based on the logical interconnection of four pillars:
 
@@ -79,14 +98,46 @@ uv run pytest
 # Run in detailed mode
 uv run pytest -v
 ```
+
+## E2E Testing (Playwright)
+Lopa includes End-to-End tests to ensure that the core user flows (like browsing problems and submitting code) work correctly in the browser.
+```bash
+# Installation
+uv run playwright install
+# Run tests in the background
+uv run pytest --playwright
+# Run tests with a visible browser (headed)
+uv run pytest --playwright --headed
+```
+
+## Generating & Viewing Reports
+After running the tests, Playwright can generate a detailed HTML report. This is particularly useful for debugging:
+```bash
+# Generate report during execution
+uv run pytest --html=report.html --self-contained-html
+
+# Open the report
+xdg-open report.html  # Linux
+# or just open report.html manually in your browser
+```
+### Troubleshooting Playwright (Linux)
+If you encounter a "Host system is missing dependencies" warning, run the following command to install the required system libraries:
+```bash
+sudo playwright install-deps
+#or
+sudo ./.venv/bin/playwright install-deps
+```
+
 ## Test Structure:
 The test suite is organized by application modules to reflect the project structure and keep tests easier to maintain.
-`tests/test_problems.py` – tests for the `Problem` model, validations, and problem-related logic.
+- `tests/test_problems.py` – tests for the `Problem` model, validations, and problem-related logic.
 - `tests/test_test_cases.py` – tests for the `TestCase` creation, relationships, and expected input/output data.
 - `tests/test_submissions.py` – tests for the `Submission` creation, evaluation flow, and submission status updates.
 - `tests/test_results.py` – tests for `Result` creation and result status handling.
 - `tests/test_users.py` – tests for user-related models and logic.
 - `conftest.py` – common test data (fixtures).
+- `e2e/test_submission_flow.py` – end-to-end tests for the complete user journey (browser-based).
+- `e2e/conftest.py` – specific fixtures for browser and page initialization.
 
 ## Project Roadmap:
 - [x] Core Execution Engine
