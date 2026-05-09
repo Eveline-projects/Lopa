@@ -8,7 +8,9 @@ from apps.results.repositories import ResultRepository
 @pytest.mark.django_db
 class TestResultRepository:
     def test_get_by_id_should_return_result(self, result):
-        found_result = ResultRepository.get_by_id(result.id)
+        found_result = ResultRepository.get_by_id(
+            result.id, result.submission.user
+        )
 
         assert found_result.id == result.id
         assert found_result.submission_id == result.submission_id
@@ -18,7 +20,9 @@ class TestResultRepository:
     def test_get_results_for_submission_should_return_only_submission_results(
         self, submission, other_result, result
     ):
-        results = ResultRepository.get_results_for_submission(submission.id)
+        results = ResultRepository.get_results_for_submission(
+            submission.id, result.submission.user
+        )
 
         assert results.count() == 1
         assert result in results
@@ -42,11 +46,11 @@ class TestResultRepository:
         assert created.execution_time == 0.12
         assert created.status == Result.Status.PENDING
 
-    def test_get_by_id_should_raise_does_not_exist_for_nonexistent_result(
-        self,
-    ):
+    def test_get_by_id_should_return_none_for_nonexistent_result(self, result):
         nonexistent_id = UUID('11111111-1111-1111-1111-111111111111')
 
-        result = ResultRepository.get_by_id(nonexistent_id)
+        result = ResultRepository.get_by_id(
+            nonexistent_id, result.submission.user
+        )
 
         assert result is None

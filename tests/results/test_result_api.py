@@ -9,7 +9,9 @@ client = TestClient(router)
 @pytest.mark.django_db
 class TestResultApi:
     def test_get_result_should_return_single_result(self, result):
-        response = client.get(f'/results/{result.id}/')
+        response = client.get(
+            f'/results/{result.id}/', user=result.submission.user
+        )
 
         assert response.status_code == 200
         data = response.json()
@@ -21,8 +23,10 @@ class TestResultApi:
         assert data['actual_output'] == result.actual_output
         assert data['execution_time'] == result.execution_time
 
-    def test_get_result_should_return_404_for_nonexistent_result(self):
-        response = client.get('/results/11111111-1111-1111-1111-111111111111/')
+    def test_get_result_should_return_404_for_nonexistent_result(self, user):
+        response = client.get(
+            '/results/11111111-1111-1111-1111-111111111111/', user=user
+        )
 
         assert response.status_code == 404
         assert response.json()['detail'] == 'Result does not exist'
@@ -30,7 +34,9 @@ class TestResultApi:
     def test_get_results_for_submission_should_return_only_submission_results(
         self, submission, result, other_result
     ):
-        response = client.get(f'/submissions/{submission.id}/results/')
+        response = client.get(
+            f'/submissions/{submission.id}/results/', user=submission.user
+        )
 
         assert response.status_code == 200
         data = response.json()
@@ -43,7 +49,19 @@ class TestResultApi:
     def test_get_results_for_submission_should_return_empty_list_when_no_results(
         self, submission
     ):
-        response = client.get(f'/submissions/{submission.id}/results/')
+        response = client.get(
+            f'/submissions/{submission.id}/results/', user=submission.user
+        )
 
         assert response.status_code == 200
         assert response.json() == []
+
+    def test_get_result_should_return_404_for_other_user(
+        self, result, django_user_model
+    ):
+        other_user = django_user_model.objects.create_user(
+            username='hacker', password='password123'
+        )
+        response = client.get(f'/results/{result.id}/', user=other_user)
+
+        assert response.status_code == 404

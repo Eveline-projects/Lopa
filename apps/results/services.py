@@ -2,6 +2,7 @@ import logging
 from uuid import UUID
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
+from django.contrib.auth import get_user_model
 
 from .models import Result
 from .repositories import ResultRepository
@@ -11,6 +12,8 @@ from apps.submissions.models import Submission
 logger = logging.getLogger(__name__)
 
 STATUS_CHOICES_RESULT = Result.Status.values
+
+User = get_user_model()
 
 
 class ResultService:
@@ -72,12 +75,14 @@ class ResultService:
         return saved
 
     @staticmethod
-    def get_results_for_submission(submission_id: UUID) -> QuerySet[Result]:
-        return ResultRepository.get_results_for_submission(submission_id)
+    def get_results_for_submission(
+        submission_id: UUID, user: User
+    ) -> QuerySet[Result]:
+        return ResultRepository.get_results_for_submission(submission_id, user)
 
     @staticmethod
-    def get_result_by_id(result_id: UUID) -> Result:
-        result = ResultRepository.get_by_id(result_id)
+    def get_result_by_id(result_id: UUID, user: User) -> Result:
+        result = ResultRepository.get_by_id(result_id, user)
 
         if not result:
             logger.warning('result not found id=%s', result_id)

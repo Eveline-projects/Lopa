@@ -16,7 +16,7 @@ router = Router()
 def get_result(request, result_id: UUID):
     logger.info('get_result request id=%s', result_id)
     try:
-        return ResultService.get_result_by_id(result_id)
+        return ResultService.get_result_by_id(result_id, user=request.user)
     except Result.DoesNotExist:
         logger.warning('result not found id=%s', result_id)
         raise HttpError(404, 'Result does not exist')
@@ -29,4 +29,6 @@ def get_results_for_submission(request, submission_id: UUID):
     logger.info(
         'get_results_for_submission request submission_id=%s', submission_id
     )
-    return ResultService.get_results_for_submission(submission_id)
+    return ResultService.get_results_for_submission(
+        submission_id, request.user
+    )
