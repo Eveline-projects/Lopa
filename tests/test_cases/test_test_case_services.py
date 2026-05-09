@@ -12,7 +12,7 @@ class TestTestCaseService:
             problem_id=problem.id,
             input_data='2 + 2',
             expected_output='4',
-            is_hidden=True
+            is_hidden=True,
         )
 
         assert ProblemTestCase.objects.count() == 1
@@ -21,14 +21,14 @@ class TestTestCaseService:
         assert test_case.expected_output == '4'
         assert test_case.is_hidden is True
 
-    def test_create_test_case_should_not_save_to_db_on_validation_error(self, problem):
+    def test_create_test_case_should_not_save_to_db_on_validation_error(
+        self, problem
+    ):
         initial_count = ProblemTestCase.objects.count()
 
         with pytest.raises(ValidationError):
             TestCaseService.create_test_case(
-                problem_id=problem.id,
-                input_data='',
-                expected_output='4'
+                problem_id=problem.id, input_data='', expected_output='4'
             )
         assert ProblemTestCase.objects.count() == initial_count
 
@@ -42,7 +42,9 @@ class TestTestCaseService:
 
         assert 'Input data cannot be empty' in str(excinfo.value)
 
-    def test_create_test_case_should_fail_on_empty_expected_output(self, problem):
+    def test_create_test_case_should_fail_on_empty_expected_output(
+        self, problem
+    ):
         with pytest.raises(ValidationError) as excinfo:
             TestCaseService.create_test_case(
                 problem_id=problem.id,
@@ -50,11 +52,10 @@ class TestTestCaseService:
                 expected_output='  ',
             )
 
-        assert "Expected output cannot be empty" in str(excinfo.value)
+        assert 'Expected output cannot be empty' in str(excinfo.value)
 
     def test_get_test_cases_for_problem_should_return_only_test_cases_for_selected_problem(
-            self,
-            problem
+        self, problem
     ):
         other_problem = Problem.objects.create(
             title='Other problem',

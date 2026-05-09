@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -17,11 +16,26 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TestCase',
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                (
+                    'id',
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
                 ('input_data', models.TextField()),
                 ('expected_output', models.TextField()),
                 ('is_hidden', models.BooleanField(default=False)),
-                ('problem', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='test_cases', to='problems.problem')),
+                (
+                    'problem',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='test_cases',
+                        to='problems.problem',
+                    ),
+                ),
             ],
         ),
     ]

@@ -12,7 +12,7 @@ class TestProblemService:
             title='Easy Problem',
             description='Test',
             difficulty='easy',
-            category='Test'
+            category='Test',
         )
         assert new_problem.title == 'Easy Problem'
         assert new_problem.description == 'Test'
@@ -25,7 +25,7 @@ class TestProblemService:
             title='Easy Problem',
             description='Test',
             difficulty='easy',
-            category='Test'
+            category='Test',
         )
         assert Problem.objects.count() == 1
         assert new_problem.title == 'Easy Problem'
@@ -36,36 +36,33 @@ class TestProblemService:
                 title='Test',
                 description='Test',
                 difficulty='invalid_level',
-                category='Test'
+                category='Test',
             )
 
     def test_get_all_problems_should_returns_only_active_problems(self):
         Problem.objects.create(
             title='Active',
-            description="Active description",
-            difficulty="easy",
-            category="arrays",
-            is_active=True
+            description='Active description',
+            difficulty='easy',
+            category='arrays',
+            is_active=True,
         )
         Problem.objects.create(
             title='Inactive',
-            description="Inactive description",
-            difficulty="easy",
-            category="arrays",
-            is_active=False
+            description='Inactive description',
+            difficulty='easy',
+            category='arrays',
+            is_active=False,
         )
 
         problems = ProblemService.get_all_problems()
 
         assert problems.count() == 1
-        assert problems.first().title == "Active"
+        assert problems.first().title == 'Active'
         assert problems.first().is_active is True
 
     def test_get_problem_by_id_should_returns_problem(self):
-        problem = Problem.objects.create(
-            title='Test Problem',
-            is_active=True
-        )
+        problem = Problem.objects.create(title='Test Problem', is_active=True)
         result = ProblemService.get_problem_by_id(problem.id)
 
         assert result == problem
@@ -73,14 +70,15 @@ class TestProblemService:
 
     def test_get_problem_by_id_should_raises_error_for_inactive_problem(self):
         inactive_problem = Problem.objects.create(
-            title='Inactive Problem',
-            is_active=False
+            title='Inactive Problem', is_active=False
         )
 
         with pytest.raises(ProblemNotFound, match='Problem not found'):
             ProblemService.get_problem_by_id(inactive_problem.id)
 
-    def test_update_problem_should_update_only_provided_fields(self, problem: Problem):
+    def test_update_problem_should_update_only_provided_fields(
+        self, problem: Problem
+    ):
         old_difficulty = problem.difficulty
         new_title = 'New Title'
 
@@ -90,22 +88,22 @@ class TestProblemService:
         assert problem.title == new_title
         assert problem.difficulty == old_difficulty
 
-    def test_update_problem_should_raise_error_on_invalid_difficulty(self, problem: Problem):
+    def test_update_problem_should_raise_error_on_invalid_difficulty(
+        self, problem: Problem
+    ):
         with pytest.raises(ValidationError):
             ProblemService.update_problem(
-                problem=problem,
-                difficulty="invalid_level"
+                problem=problem, difficulty='invalid_level'
             )
 
     def test_update_problem_should_change_difficulty(self, problem: Problem):
-        ProblemService.update_problem(
-            problem=problem,
-            difficulty='hard'
-        )
+        ProblemService.update_problem(problem=problem, difficulty='hard')
         problem.refresh_from_db()
         assert problem.difficulty == 'hard'
 
-    def test_deactivate_problem_should_set_is_active_false(self, problem: Problem):
+    def test_deactivate_problem_should_set_is_active_false(
+        self, problem: Problem
+    ):
         assert problem.is_active is True
         ProblemService.deactivate_problem(problem)
         problem.refresh_from_db()

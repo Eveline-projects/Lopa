@@ -2,7 +2,6 @@ import uuid
 from uuid import UUID
 from django.db.models import QuerySet
 
-from apps.problems.models import Problem
 from apps.problems.repositories import ProblemRepository
 from apps.problems.exceptions import ProblemNotFound
 

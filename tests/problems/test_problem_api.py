@@ -47,7 +47,7 @@ class TestProblemApi:
             is_active=True,
         )
 
-        response = client.get(f"/{problem.id}/")
+        response = client.get(f'/{problem.id}/')
 
         assert response.status_code == 200
         data = response.json()
@@ -68,7 +68,7 @@ class TestProblemApi:
             is_active=False,
         )
 
-        response = client.get(f"/{problem.id}/")
+        response = client.get(f'/{problem.id}/')
 
         assert response.status_code == 404
         assert response.json()['detail'] == 'Problem not found'
@@ -102,7 +102,7 @@ class TestProblemApi:
         assert Problem.objects.first().title == 'Two Sum'
 
     def test_delete_problem_should_deactivate_it_and_return_204(self, problem):
-        response = client.delete(f"/{problem.id}/")
+        response = client.delete(f'/{problem.id}/')
 
         assert response.status_code == 204
 
@@ -116,10 +116,10 @@ class TestProblemApi:
         payload = {
             'title': 'Updated title',
             'difficulty': 'hard',
-            'category': 'update'
+            'category': 'update',
         }
 
-        response = client.patch(f"/{problem.id}/", json=payload)
+        response = client.patch(f'/{problem.id}/', json=payload)
 
         assert response.status_code == 200
         data = response.json()
@@ -135,15 +135,19 @@ class TestProblemApi:
     def test_patch_problem_should_return_404_for_nonexistent_problem(self):
         payload = {'title': 'Updated'}
 
-        response = client.patch('/11111111-1111-1111-1111-111111111111/', json=payload)
+        response = client.patch(
+            '/11111111-1111-1111-1111-111111111111/', json=payload
+        )
 
         assert response.status_code == 404
         assert response.json()['detail'] == 'Problem not found'
 
-    def test_patch_problem_should_return_422_for_invalid_difficulty(self, problem):
+    def test_patch_problem_should_return_422_for_invalid_difficulty(
+        self, problem
+    ):
         payload = {'difficulty': 'impossible'}
 
-        response = client.patch(f"/{problem.id}/", json=payload)
+        response = client.patch(f'/{problem.id}/', json=payload)
 
         assert response.status_code == 422
 
@@ -156,15 +160,17 @@ class TestProblemApi:
         problem.is_active = False
         problem.save()
 
-        response = client.get(f"/{problem.id}/")
+        response = client.get(f'/{problem.id}/')
 
         assert response.status_code == 404
 
-    def test_delete_problem_should_return_204_for_inactive_problem(self, problem):
+    def test_delete_problem_should_return_204_for_inactive_problem(
+        self, problem
+    ):
         problem.is_active = False
         problem.save()
 
-        response = client.delete(f"/{problem.id}/")
+        response = client.delete(f'/{problem.id}/')
 
         assert response.status_code == 204
         problem.refresh_from_db()

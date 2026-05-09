@@ -11,15 +11,17 @@ from .services import SubmissionService
 router = Router()
 
 
-@router.get("/submissions/{submission_id}/", response=SubmissionSchema)
+@router.get('/submissions/{submission_id}/', response=SubmissionSchema)
 def get_submission(request, submission_id: UUID):
     try:
         return SubmissionService.get_submission_by_id(submission_id)
     except Submission.DoesNotExist:
-        raise HttpError(404, "Submission not found")
+        raise HttpError(404, 'Submission not found')
 
 
-@router.post("/problems/{problem_id}/submissions/", response={201: SubmissionSchema})
+@router.post(
+    '/problems/{problem_id}/submissions/', response={201: SubmissionSchema}
+)
 def create_submission(request, problem_id: UUID, data: SubmissionCreateSchema):
     try:
         submission = SubmissionService.create_submission(
@@ -29,11 +31,13 @@ def create_submission(request, problem_id: UUID, data: SubmissionCreateSchema):
         )
         return Status(201, submission)
     except ProblemNotFound:
-        raise HttpError(404, "Problem not found")
+        raise HttpError(404, 'Problem not found')
     except ValidationError as e:
         raise HttpError(422, e.messages[0])
 
 
-@router.get("/problems/{problem_id}/submissions/", response=list[SubmissionSchema])
+@router.get(
+    '/problems/{problem_id}/submissions/', response=list[SubmissionSchema]
+)
 def get_submissions_for_problem(request, problem_id: UUID):
     return SubmissionService.get_submissions_for_problem(problem_id)

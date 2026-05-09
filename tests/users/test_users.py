@@ -28,8 +28,11 @@ class TestUserForms:
 
     def test_login_form_has_correct_placeholders_and_labels(self):
         form = ArchitectLoginForm()
-        assert form.fields['username'].widget.attrs['placeholder'] == 'neo_architect'
-        assert form.fields['username'].label == "Identifier_Username"
+        assert (
+            form.fields['username'].widget.attrs['placeholder']
+            == 'neo_architect'
+        )
+        assert form.fields['username'].label == 'Identifier_Username'
 
 
 @pytest.mark.django_db

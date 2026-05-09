@@ -36,8 +36,7 @@ def update_problem(request, problem_id: UUID, data: ProblemUpdateSchema):
     try:
         problem = ProblemService.get_problem_for_update_or_delete(problem_id)
         updated_problem = ProblemService.update_problem(
-            problem,
-            **data.model_dump(exclude_unset=True)
+            problem, **data.model_dump(exclude_unset=True)
         )
         return updated_problem
     except ProblemNotFound:
