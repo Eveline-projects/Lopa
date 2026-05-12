@@ -1,7 +1,11 @@
+import logging
+
 from apps.results.models import Result
 from apps.results.repositories import ResultRepository
 from .models import Submission
 from .repositories import SubmissionRepository
+
+logger = logging.getLogger(__name__)
 
 
 class SubmissionStatusService:
@@ -36,7 +40,13 @@ class SubmissionEvaluationService:
 
         if not test_cases.exists():
             submission.status = Submission.Status.ERROR
-            return SubmissionRepository.save(submission)
+            saved = SubmissionRepository.save(submission)
+            logger.warning(
+                'submission evaluated no test_cases id=%s status=%s',
+                saved.id,
+                saved.status,
+            )
+            return saved
 
         created_results = []
 
@@ -63,4 +73,11 @@ class SubmissionEvaluationService:
             created_results.append(result)
 
         submission.status = SubmissionStatusService.resolve(created_results)
-        return SubmissionRepository.save(submission)
+        saved = SubmissionRepository.save(submission)
+        logger.info(
+            'submission evaluated id=%s status=%s test_cases=%d',
+            saved.id,
+            saved.status,
+            len(created_results),
+        )
+        return saved

@@ -1,9 +1,12 @@
+import logging
 from uuid import UUID
 from django.db.models import QuerySet
 from django.core.exceptions import ValidationError
 from apps.problems.exceptions import ProblemNotFound
 from .models import Problem, DIFFICULTY_CHOICES
 from .repositories import ProblemRepository
+
+logger = logging.getLogger(__name__)
 
 VALID_DIFFICULTY_KEYS = {choice[0] for choice in DIFFICULTY_CHOICES}
 
@@ -23,7 +26,14 @@ class ProblemService:
             category=category,
         )
 
-        return ProblemRepository.save(problem)
+        saved = ProblemRepository.save(problem)
+        logger.info(
+            'problem created id=%s title=%s difficulty=%s',
+            saved.id,
+            saved.title,
+            saved.difficulty,
+        )
+        return saved
 
     @staticmethod
     def update_problem(
@@ -46,11 +56,18 @@ class ProblemService:
         if category is not None:
             update_data['category'] = category
 
-        return ProblemRepository.update(problem, **update_data)
+        updated = ProblemRepository.update(problem, **update_data)
+        logger.info(
+            'problem updated id=%s fields=%s',
+            updated.id,
+            list(update_data),
+        )
+        return updated
 
     @staticmethod
     def deactivate_problem(problem: Problem) -> None:
         ProblemRepository.deactivate(problem)
+        logger.info('problem deactivated id=%s', problem.id)
 
     @staticmethod
     def get_all_problems() -> QuerySet[Problem]:
@@ -60,6 +77,7 @@ class ProblemService:
     def get_problem_by_id(problem_id: UUID) -> Problem:
         problem = ProblemRepository.get_active_by_id(problem_id)
         if not problem:
+            logger.warning('problem not found id=%s', problem_id)
             raise ProblemNotFound('Problem not found')
 
         return problem
@@ -68,6 +86,7 @@ class ProblemService:
     def get_problem_for_update_or_delete(problem_id: UUID) -> Problem:
         problem = ProblemRepository.get_by_id(problem_id)
         if not problem:
+            logger.warning('problem not found id=%s', problem_id)
             raise ProblemNotFound('Problem not found')
 
         return problem
