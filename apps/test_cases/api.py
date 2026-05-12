@@ -1,3 +1,4 @@
+import logging
 from uuid import UUID
 from ninja import Router, Status
 from ninja.errors import HttpError
@@ -7,19 +8,24 @@ from .models import TestCase
 from .schemas import TestCaseSchema, TestCaseCreateSchema
 from .services import TestCaseService
 
+logger = logging.getLogger(__name__)
+
 router = Router()
 
 
 @router.get('/test-cases/{test_case_id}/', response=TestCaseSchema)
 def get_test_case(request, test_case_id: UUID):
+    logger.info('get_test_case request id=%s', test_case_id)
     try:
         return TestCaseService.get_test_case_by_id(test_case_id)
     except TestCase.DoesNotExist:
+        logger.warning('test_case not found id=%s', test_case_id)
         raise HttpError(404, 'Test case does not exist')
 
 
 @router.post('/test-cases/', response={201: TestCaseSchema})
 def create_test_case(request, data: TestCaseCreateSchema):
+    logger.info('create_test_case request problem_id=%s', data.problem_id)
     try:
         new_test_case = TestCaseService.create_test_case(
             problem_id=data.problem_id,
@@ -34,4 +40,7 @@ def create_test_case(request, data: TestCaseCreateSchema):
 
 @router.get('/problems/{problem_id}/test-cases/', response=list[TestCaseSchema])
 def get_test_cases_for_problem(request, problem_id: UUID):
+    logger.info(
+        'get_test_cases_for_problem request problem_id=%s', problem_id
+    )
     return TestCaseService.get_test_cases_for_problem(problem_id)

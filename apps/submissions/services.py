@@ -1,3 +1,4 @@
+import logging
 from uuid import UUID
 
 from django.core.exceptions import ValidationError
@@ -10,6 +11,8 @@ from .repositories import SubmissionRepository
 from apps.problems.repositories import ProblemRepository
 from apps.problems.exceptions import ProblemNotFound
 from .status_services import SubmissionEvaluationService
+
+logger = logging.getLogger(__name__)
 
 STATUS_CHOICES_SUBMISSION = Submission.Status.values
 
@@ -27,6 +30,10 @@ class SubmissionService:
 
         problem = ProblemRepository.get_active_by_id(problem_id)
         if not problem:
+            logger.warning(
+                'submission rejected problem not found problem_id=%s',
+                problem_id,
+            )
             raise ProblemNotFound('Problem not found')
 
         submission = SubmissionRepository.create(
@@ -34,6 +41,13 @@ class SubmissionService:
             problem=problem,
             code=code,
             status=status,
+        )
+        logger.info(
+            'submission created id=%s problem_id=%s user_id=%s status=%s',
+            submission.id,
+            problem_id,
+            getattr(user, 'id', None),
+            submission.status,
         )
         SubmissionEvaluationService.evaluate(submission)
 
@@ -44,6 +58,7 @@ class SubmissionService:
         submission = SubmissionRepository.get_by_id(submission_id)
 
         if not submission:
+            logger.warning('submission not found id=%s', submission_id)
             raise Submission.DoesNotExist(
                 f'Submission {submission_id} not found'
             )
