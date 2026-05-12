@@ -1,6 +1,5 @@
 from uuid import UUID
 from django.db.models import QuerySet
-from typing import Optional
 from .models import TestCase
 from apps.problems.models import Problem
 
@@ -32,8 +31,5 @@ class TestCaseRepository:
         return TestCase.objects.filter(problem_id=problem_id).order_by('id')
 
     @staticmethod
-    def get_by_id(test_case_id: UUID) -> Optional[TestCase]:
-        try:
-            return TestCase.objects.get(id=test_case_id)
-        except TestCase.DoesNotExist:
-            return None
+    def get_by_id(test_case_id: UUID) -> TestCase | None:
+        return TestCase.objects.filter(id=test_case_id).first()

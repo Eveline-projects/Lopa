@@ -89,15 +89,16 @@ class ProblemService:
                 difficulty=difficulty,
                 category=category,
             )
-            if is_active and not updated.is_active:
-                updated.is_active = True
+            if updated.is_active != is_active:
+                updated.is_active = is_active
                 ProblemRepository.save(updated)
 
             return updated, False
-        new_problem = Problem.Service.create_problem(
+        new_problem = ProblemService.create_problem(
             title=title,
             description=description,
             difficulty=difficulty,
             category=category,
+            is_active=is_active,
         )
         return new_problem, True

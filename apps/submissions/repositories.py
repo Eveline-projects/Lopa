@@ -1,6 +1,5 @@
 from uuid import UUID
 from django.db.models import QuerySet
-from typing import Optional
 
 from apps.problems.models import Problem
 from apps.users.models import User
@@ -30,11 +29,8 @@ class SubmissionRepository:
         return SubmissionRepository.save(submission)
 
     @staticmethod
-    def get_by_id(submission_id: UUID) -> Optional[Submission]:
-        try:
-            return Submission.objects.get(id=submission_id)
-        except Submission.DoesNotExist:
-            return None
+    def get_by_id(submission_id: UUID) -> Submission | None:
+        return Submission.objects.filter(id=submission_id).first()
 
     @staticmethod
     def get_submissions_for_problem(problem_id: UUID) -> QuerySet[Submission]:

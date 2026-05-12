@@ -24,7 +24,7 @@ Lopa (from the Polish "łopatologicznie" meaning straightforward or down-to-eart
 * **Package Manager:** uv (Extremely fast Python package installer and resolver)
 * **Database:** SQLite (dev/local)
 * **Testing:** Pytest 9.0.x with Pytest-Django & Playwright (E2E)
-* **Reporting** pytest-html
+* **Reporting:** pytest-html
 * **Configuration:** `pyproject.toml` & `uv.lock` (Modern dependency management)
 * **Environment:** Django-environ (Configuration via `.env`)
 * **Code Quality:** Ruff
@@ -61,6 +61,7 @@ To quickly get started with sample data (e.g., Two Sum, Palindrome tasks), use t
 # Load initial algorithm problems
 uv run manage.py load_problems initial_problems.json
 ```
+
 ### 4. Frontend & User Interface
 Lopa uses Django Templates with Tailwind CSS (via CDN for development) to provide a clean and responsive UI. No separate frontend build steps (like npm/yarn) are required for the basic setup.
 
@@ -120,6 +121,7 @@ uv run pytest --html=report.html --self-contained-html
 xdg-open report.html  # Linux
 # or just open report.html manually in your browser
 ```
+
 ### Troubleshooting Playwright (Linux)
 If you encounter a "Host system is missing dependencies" warning, run the following command to install the required system libraries:
 ```bash

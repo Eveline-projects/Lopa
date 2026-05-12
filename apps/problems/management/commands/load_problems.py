@@ -1,5 +1,5 @@
 import json
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.core.exceptions import ValidationError
 from apps.problems.services import ProblemService
 
@@ -21,21 +21,6 @@ class Command(BaseCommand):
 
             for item in data:
                 try:
-                    if not all(
-                        k in item
-                        for k in (
-                            'title',
-                            'description',
-                            'difficulty',
-                            'category',
-                        )
-                    ):
-                        self.stdout.write(
-                            self.style.WARNING(
-                                f'Skipping: Missiong fields in {item.get("title", "Unknown")}'
-                            )
-                        )
-                        continue
                     problem, created = ProblemService.seed_problem(
                         title=item['title'],
                         description=item['description'],
@@ -56,16 +41,13 @@ class Command(BaseCommand):
                         )
                     )
                 except ValidationError as validation_error:
-                    self.stdout.write(
-                        self.style.ERROR(
-                            f'Invalid record {item.get("title")}: {validation_error}'
-                        )
+                    self.stderr.write(
+                        self.style.ERROR(f'Invalid record: {validation_error}')
                     )
+
                 except Exception as unexpected_error:
-                    self.stdout.write(
-                        self.style.ERROR(
-                            f'Error loading {item.get("title")}: {str(unexpected_error)}'
-                        )
+                    raise CommandError(
+                        f'Unexpected error during seeding: {unexpected_error}'
                     )
 
         except FileNotFoundError:
