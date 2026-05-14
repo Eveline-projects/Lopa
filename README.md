@@ -125,9 +125,7 @@ xdg-open report.html  # Linux
 ### Troubleshooting Playwright (Linux)
 If you encounter a "Host system is missing dependencies" warning, run the following command to install the required system libraries:
 ```bash
-sudo playwright install-deps
-#or
-sudo ./.venv/bin/playwright install-deps
+sudo uv run playwright install-deps
 ```
 
 ## Test Structure:

@@ -33,7 +33,4 @@ quote-style = "single"
 
 [tool.ruff]
 line-length = 79
-exclude = [
-    "migrations",
-    ".venv",
-]
+extend-exclude = ["migrations"]
