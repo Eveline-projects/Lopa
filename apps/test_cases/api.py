@@ -38,7 +38,9 @@ def create_test_case(request, data: TestCaseCreateSchema):
         raise HttpError(404, 'Problem not found')
 
 
-@router.get('/problems/{problem_id}/test-cases/', response=list[TestCaseSchema])
+@router.get(
+    '/problems/{problem_id}/test-cases/', response=list[TestCaseSchema]
+)
 def get_test_cases_for_problem(request, problem_id: UUID):
     logger.info(
         'get_test_cases_for_problem request problem_id=%s', problem_id

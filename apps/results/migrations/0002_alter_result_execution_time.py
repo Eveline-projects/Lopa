@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('results', '0001_initial'),
     ]
@@ -14,6 +13,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='result',
             name='execution_time',
-            field=models.FloatField(default=0.0, validators=[django.core.validators.MinValueValidator(0.0)]),
+            field=models.FloatField(
+                default=0.0,
+                validators=[django.core.validators.MinValueValidator(0.0)],
+            ),
         ),
     ]

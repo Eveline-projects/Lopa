@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -18,12 +17,47 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Result',
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
-                ('status', models.CharField(choices=[('PENDING', 'Pending'), ('PASSED', 'Passed'), ('WRONG_ANSWER', 'Wrong Answer'), ('TIME_LIMIT_EXCEEDED', 'Time Limit Exceeded'), ('RUNTIME_ERROR', 'Runtime Error')], default='PENDING', max_length=25)),
+                (
+                    'id',
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
+                (
+                    'status',
+                    models.CharField(
+                        choices=[
+                            ('PENDING', 'Pending'),
+                            ('PASSED', 'Passed'),
+                            ('WRONG_ANSWER', 'Wrong Answer'),
+                            ('TIME_LIMIT_EXCEEDED', 'Time Limit Exceeded'),
+                            ('RUNTIME_ERROR', 'Runtime Error'),
+                        ],
+                        default='PENDING',
+                        max_length=25,
+                    ),
+                ),
                 ('actual_output', models.TextField(blank=True, null=True)),
                 ('execution_time', models.FloatField(default=0.0)),
-                ('submission', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='results', to='submissions.submission')),
-                ('test_case', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='results', to='test_cases.testcase')),
+                (
+                    'submission',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='results',
+                        to='submissions.submission',
+                    ),
+                ),
+                (
+                    'test_case',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='results',
+                        to='test_cases.testcase',
+                    ),
+                ),
             ],
             options={
                 'ordering': ['test_case__id'],

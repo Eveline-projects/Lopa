@@ -14,17 +14,19 @@ logger = logging.getLogger(__name__)
 router = Router()
 
 
-@router.get("/submissions/{submission_id}/", response=SubmissionSchema)
+@router.get('/submissions/{submission_id}/', response=SubmissionSchema)
 def get_submission(request, submission_id: UUID):
     logger.info('get_submission request id=%s', submission_id)
     try:
         return SubmissionService.get_submission_by_id(submission_id)
     except Submission.DoesNotExist:
-        logger.warning('submission not found id=%s', submission_id)
-        raise HttpError(404, "Submission not found")
+        raise HttpError(404, 'Submission not found')
 
 
-@router.post("/problems/{problem_id}/submissions/", response={201: SubmissionSchema})
+
+@router.post(
+    '/problems/{problem_id}/submissions/', response={201: SubmissionSchema}
+)
 def create_submission(request, problem_id: UUID, data: SubmissionCreateSchema):
     user_id = getattr(request.user, 'id', None)
     logger.info(
@@ -41,7 +43,7 @@ def create_submission(request, problem_id: UUID, data: SubmissionCreateSchema):
         )
         return Status(201, submission)
     except ProblemNotFound:
-        raise HttpError(404, "Problem not found")
+        raise HttpError(404, 'Problem not found')
     except ValidationError as e:
         logger.warning(
             'create_submission validation failed problem_id=%s error=%s',
@@ -51,7 +53,9 @@ def create_submission(request, problem_id: UUID, data: SubmissionCreateSchema):
         raise HttpError(422, e.messages[0])
 
 
-@router.get("/problems/{problem_id}/submissions/", response=list[SubmissionSchema])
+@router.get(
+    '/problems/{problem_id}/submissions/', response=list[SubmissionSchema]
+)
 def get_submissions_for_problem(request, problem_id: UUID):
     logger.info('get_submissions_for_problem request problem_id=%s', problem_id)
     return SubmissionService.get_submissions_for_problem(problem_id)

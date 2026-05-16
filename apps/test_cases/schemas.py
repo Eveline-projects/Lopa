@@ -21,5 +21,7 @@ class TestCaseCreateSchema(Schema):
     @classmethod
     def not_empty_whitespace(cls, value: str) -> str:
         if not value.strip():
-            raise ValueError('Field cannot be empty or contain only whitespace.')
+            raise ValueError(
+                'Field cannot be empty or contain only whitespace.'
+            )
         return value

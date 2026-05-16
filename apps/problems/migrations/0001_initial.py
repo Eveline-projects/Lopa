@@ -5,20 +5,37 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
             name='Problem',
             fields=[
-                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                (
+                    'id',
+                    models.UUIDField(
+                        default=uuid.uuid4,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
+                    ),
+                ),
                 ('title', models.CharField(max_length=200)),
                 ('description', models.TextField()),
-                ('difficulty', models.CharField(choices=[('easy', 'easy'), ('medium', 'medium'), ('hard', 'hard')], default='easy', max_length=10)),
+                (
+                    'difficulty',
+                    models.CharField(
+                        choices=[
+                            ('easy', 'easy'),
+                            ('medium', 'medium'),
+                            ('hard', 'hard'),
+                        ],
+                        default='easy',
+                        max_length=10,
+                    ),
+                ),
                 ('category', models.CharField(max_length=200)),
                 ('is_active', models.BooleanField(default=True)),
             ],
