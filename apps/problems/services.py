@@ -14,7 +14,7 @@ VALID_DIFFICULTY_KEYS = {choice[0] for choice in DIFFICULTY_CHOICES}
 class ProblemService:
     @staticmethod
     def create_problem(
-        title: str, description: str, difficulty: str, category: str
+        title: str, description: str, difficulty: str, category: str, is_active: bool = True
     ) -> Problem:
         if difficulty not in VALID_DIFFICULTY_KEYS:
             raise ValidationError('Invalid difficulty level')
@@ -24,6 +24,7 @@ class ProblemService:
             description=description,
             difficulty=difficulty,
             category=category,
+            is_active=is_active,
         )
 
         saved = ProblemRepository.save(problem)
@@ -90,3 +91,31 @@ class ProblemService:
             raise ProblemNotFound('Problem not found')
 
         return problem
+
+    @staticmethod
+    def upsert_problem(
+        title: str,
+        description: str,
+        difficulty: str,
+        category: str,
+        is_active: bool = True,
+    ) -> tuple[Problem, bool]:
+        existing_problem = ProblemRepository.get_by_title(title)
+
+        if existing_problem:
+            updated = ProblemService.update_problem(
+                problem=existing_problem,
+                description=description,
+                difficulty=difficulty,
+                category=category,
+            )
+            return updated, False
+        
+        new_problem = ProblemService.create_problem(
+            title=title,
+            description=description,
+            difficulty=difficulty,
+            category=category,
+            is_active=is_active,
+        )
+        return new_problem, True
