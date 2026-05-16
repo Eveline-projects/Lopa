@@ -25,6 +25,7 @@ dev = [
     "pytest>=9.0.2",
     "pytest-cov>=7.1.0",
     "pytest-django>=4.12.0",
+    "pytest-html>=4.2.0",
     "pytest-playwright>=0.7.2",
 ]
 
@@ -33,3 +34,4 @@ quote-style = "single"
 
 [tool.ruff]
 line-length = 79
+extend-exclude = ["migrations"]

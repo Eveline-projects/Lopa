@@ -5,7 +5,6 @@ from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
 
 from .models import Submission
-from apps.problems.models import Problem
 from apps.users.models import User
 from .repositories import SubmissionRepository
 from apps.problems.repositories import ProblemRepository

@@ -110,3 +110,37 @@ class TestProblemService:
         ProblemService.deactivate_problem(problem)
         problem.refresh_from_db()
         assert problem.is_active is False
+
+    def test_upsert_problem_should_create_new_record(self):
+        title = 'Brand New Problem'
+
+        problem, created = ProblemService.upsert_problem(
+            title=title,
+            description='New description',
+            difficulty='easy',
+            category='arrays',
+            is_active=True,
+        )
+
+        assert created is True
+        assert Problem.objects.filter(title=title).exists()
+        assert problem.title == title
+        assert problem.is_active is True
+
+    def test_upsert_problem_should_update_existing_record(self, problem: Problem):
+        new_description = 'Updated by upsert'
+
+        updated_problem, created = ProblemService.upsert_problem(
+            title=problem.title,
+            description=new_description,
+            difficulty=problem.difficulty,
+            category=problem.category,
+            is_active=False,
+        )
+
+        assert created is False
+        assert updated_problem.id == problem.id
+
+        problem.refresh_from_db()
+        assert problem.description == new_description
+
