@@ -30,7 +30,7 @@ class SubmissionService:
         problem = ProblemRepository.get_active_by_id(problem_id)
         if not problem:
             logger.warning(
-                'submission rejected problem not found problem_id=%s',
+                'submission rejected problem not found problem_id=%s user_id=%s',
                 problem_id,
                 user.id,
             )

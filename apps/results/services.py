@@ -91,7 +91,7 @@ class ResultService:
         result = ResultRepository.get_by_id(result_id, user)
 
         if not result:
-            logger.warning('result not found id=%s', result_id, user.id)
+            logger.warning('result not found result_id=%s user_id=%s', result_id, user.id)
             raise Result.DoesNotExist(f'Result with id {result_id} not found')
 
         return result
