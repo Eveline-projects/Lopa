@@ -10,7 +10,6 @@ class CreateUserForm(UserCreationForm):
         model = User
         fields = ['username', 'email']
 
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -18,19 +17,22 @@ class CreateUserForm(UserCreationForm):
         self.fields['password2'].label = 'Repeat Password'
 
         self.fields['username'].help_text = ''
-        self.fields['password1'].help_text = 'Your password must be at least 8 characters long.'
+        self.fields[
+            'password1'
+        ].help_text = 'Your password must be at least 8 characters long.'
         self.fields['password2'].help_text = ''
+
 
 class ArchitectLoginForm(AuthenticationForm):
     username = forms.CharField(
-        label="Identifier_Username",
-        widget=forms.TextInput(attrs={
-            'placeholder': 'neo_architect',
-        })
+        label='Identifier_Username',
+        widget=forms.TextInput(
+            attrs={
+                'placeholder': 'neo_architect',
+            }
+        ),
     )
     password = forms.CharField(
-        label="Access_Password",
-        widget=forms.PasswordInput(attrs={
-            'placeholder': '••••••••••••'
-        })
+        label='Access_Password',
+        widget=forms.PasswordInput(attrs={'placeholder': '••••••••••••'}),
     )

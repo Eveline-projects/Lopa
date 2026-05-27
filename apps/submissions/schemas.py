@@ -10,7 +10,7 @@ class SubmissionSchema(Schema):
     problem_id: UUID
     code: str
     created_at: datetime
-    status: Literal["PENDING", "DONE", "WRONG_ANSWER", "ERROR"]
+    status: Literal['PENDING', 'DONE', 'WRONG_ANSWER', 'ERROR']
 
 
 class SubmissionCreateSchema(Schema):

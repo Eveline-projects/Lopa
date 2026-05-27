@@ -11,11 +11,7 @@ class Result(models.Model):
         TIME_LIMIT_EXCEEDED = 'TIME_LIMIT_EXCEEDED', 'Time Limit Exceeded'
         RUNTIME_ERROR = 'RUNTIME_ERROR', 'Runtime Error'
 
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False
-    )
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     submission = models.ForeignKey(
         'submissions.Submission',
         on_delete=models.CASCADE,
@@ -36,12 +32,11 @@ class Result(models.Model):
         blank=True,
     )
     execution_time = models.FloatField(
-        default=0.0,
-        validators=[MinValueValidator(0.0)]
+        default=0.0, validators=[MinValueValidator(0.0)]
     )
 
     class Meta:
         ordering = ['test_case__id']
 
     def __str__(self):
-        return f"Result {self.id} - {self.status}"
+        return f'Result {self.id} - {self.status}'

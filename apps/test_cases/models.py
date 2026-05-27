@@ -4,11 +4,7 @@ from django.db import models
 
 
 class TestCase(models.Model):
-    id = models.UUIDField(
-        primary_key=True,
-        default=uuid.uuid4,
-        editable=False
-    )
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     problem = models.ForeignKey(
         'problems.Problem',
         on_delete=models.CASCADE,
@@ -31,7 +27,7 @@ class TestCase(models.Model):
             raise ValidationError(errors)
 
     def __str__(self):
-        return f"Test for {self.problem.title}"
+        return f'Test for {self.problem.title}'
 
 
 # Prevent pytest from collecting this Django model as a test class.
