@@ -23,7 +23,6 @@ def get_submission(request, submission_id: UUID):
         raise HttpError(404, 'Submission not found')
 
 
-
 @router.post(
     '/problems/{problem_id}/submissions/', response={201: SubmissionSchema}
 )
@@ -57,5 +56,7 @@ def create_submission(request, problem_id: UUID, data: SubmissionCreateSchema):
     '/problems/{problem_id}/submissions/', response=list[SubmissionSchema]
 )
 def get_submissions_for_problem(request, problem_id: UUID):
-    logger.info('get_submissions_for_problem request problem_id=%s', problem_id)
+    logger.info(
+        'get_submissions_for_problem request problem_id=%s', problem_id
+    )
     return SubmissionService.get_submissions_for_problem(problem_id)

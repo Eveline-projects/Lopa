@@ -34,7 +34,9 @@ def create_problem(request, data: ProblemCreateSchema):
         new_problem = ProblemService.create_problem(**data.model_dump())
         return Status(201, new_problem)
     except ValidationError as e:
-        logger.warning('create_problem validation failed error=%s', e.messages[0])
+        logger.warning(
+            'create_problem validation failed error=%s', e.messages[0]
+        )
         raise HttpError(422, e.messages[0])
 
 
