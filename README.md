@@ -41,6 +41,9 @@ cd Lopa
 uv sync
 ```
 
+### Docker
+For information on how to run the project in a containerized environment, see the [Docker Setup Guide](./README.Docker.md).
+
 ### 2. Database configuration and startup
 You don't need to manually activate the virtual environment; uv run handles it for you.
 Lopa uses **Django** for the web application and **Django Ninja** for the API layer.

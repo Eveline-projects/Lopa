@@ -125,7 +125,9 @@ class TestProblemService:
         assert problem.title == title
         assert problem.is_active is True
 
-    def test_upsert_problem_should_update_existing_record(self, problem: Problem):
+    def test_upsert_problem_should_update_existing_record(
+        self, problem: Problem
+    ):
         new_description = 'Updated by upsert'
 
         updated_problem, created = ProblemService.upsert_problem(
@@ -141,4 +143,3 @@ class TestProblemService:
 
         problem.refresh_from_db()
         assert problem.description == new_description
-

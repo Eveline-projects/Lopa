@@ -30,8 +30,9 @@ class SubmissionService:
         problem = ProblemRepository.get_active_by_id(problem_id)
         if not problem:
             logger.warning(
-                'submission rejected problem not found problem_id=%s',
+                'submission rejected problem not found problem_id=%s user_id=%s',
                 problem_id,
+                user.id,
             )
             raise ProblemNotFound('Problem not found')
 
@@ -45,10 +46,18 @@ class SubmissionService:
             'submission created id=%s problem_id=%s user_id=%s status=%s',
             submission.id,
             problem_id,
-            getattr(user, 'id', None),
+            user.id,
             submission.status,
         )
-        SubmissionEvaluationService.evaluate(submission)
+        try:
+            SubmissionEvaluationService.evaluate(submission)
+        except Exception as eval_error:
+            logger.error(
+                'Submission created but evaluation failed submission_id=%s error=%s',
+                submission.id,
+                str(eval_error),
+                exc_info=True,
+            )
 
         return submission
 

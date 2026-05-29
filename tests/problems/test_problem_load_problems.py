@@ -32,14 +32,14 @@ class LoadProblemsCommandTest(TestCase):
         out = StringIO()
         err = StringIO()
 
-        call_command("load_problems", self.test_file, stdout=out, stderr=err)
+        call_command('load_problems', self.test_file, stdout=out, stderr=err)
 
-        self.assertEqual(err.getvalue(), "")
-        self.assertIn("Created new problem: Two Sum", out.getvalue())
+        self.assertEqual(err.getvalue(), '')
+        self.assertIn('Created new problem: Two Sum', out.getvalue())
         self.assertEqual(Problem.objects.count(), 1)
 
-        problem = Problem.objects.get(title="Two Sum")
-        self.assertEqual(problem.difficulty, "easy")
+        problem = Problem.objects.get(title='Two Sum')
+        self.assertEqual(problem.difficulty, 'easy')
         self.assertTrue(problem.is_active)
 
     def test_load_problems_updates_existing_record(self):
@@ -54,7 +54,6 @@ class LoadProblemsCommandTest(TestCase):
         err = StringIO()
 
         call_command('load_problems', self.test_file, stdout=out, stderr=err)
-
 
         self.assertEqual(err.getvalue(), '')
         self.assertIn('Updated existing problem: Two Sum', out.getvalue())
@@ -149,7 +148,7 @@ class LoadProblemsCommandTest(TestCase):
 
         call_command('load_problems', self.test_file, stdout=out, stderr=err)
 
-        self.assertIn("Invalid record:", err.getvalue())
-        self.assertIn("Invalid difficulty", err.getvalue())
+        self.assertIn('Invalid record:', err.getvalue())
+        self.assertIn('Invalid difficulty', err.getvalue())
         self.assertIn('Created new problem: Valid problem', out.getvalue())
         self.assertEqual(mock_upsert.call_count, 2)

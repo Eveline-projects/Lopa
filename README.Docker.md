@@ -1,9 +1,31 @@
+# Docker Setup Guide
+
+This guide explains how to containerize and run the Lopa application using Docker.
+
+## Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) or Docker Engine installed.
+
+## Environment Configuration
+Before running, ensure you have a `.env` file in the root directory (you can copy it from `.env.example`).
+```bash
+cp .env.example .env
+```
+
 ### Building and running your application
 
 When you're ready, start your application by running:
 `docker compose up --build`.
 
 Your application will be available at http://localhost:8000.
+
+### Useful Docker Commands
+* Run in background: docker compose up -d
+
+*  Stop containers: docker compose down
+
+*  View logs: docker compose logs -f
+
+*  Execute commands (e.g., migrations): docker compose exec web python manage.py migrate
 
 ### Deploying your application to the cloud
 

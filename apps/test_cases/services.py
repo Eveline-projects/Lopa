@@ -54,5 +54,5 @@ class TestCaseService:
         test_case = TestCaseRepository.get_by_id(test_case_id)
         if not test_case:
             logger.warning('test_case not found id=%s', test_case_id)
-            raise TestCase.DoesNotExist('TestCase {test_case_id} not found')
+            raise TestCase.DoesNotExist(f'TestCase {test_case_id} not found')
         return test_case

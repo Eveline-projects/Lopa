@@ -14,9 +14,16 @@ VALID_DIFFICULTY_KEYS = {choice[0] for choice in DIFFICULTY_CHOICES}
 class ProblemService:
     @staticmethod
     def create_problem(
-        title: str, description: str, difficulty: str, category: str, is_active: bool = True
+        title: str,
+        description: str,
+        difficulty: str,
+        category: str,
+        is_active: bool = True,
     ) -> Problem:
         if difficulty not in VALID_DIFFICULTY_KEYS:
+            logger.warning(
+                'Problem creation failed: invalid difficulty=%s', difficulty
+            )
             raise ValidationError('Invalid difficulty level')
 
         problem = Problem(
@@ -45,6 +52,11 @@ class ProblemService:
         category: str | None = None,
     ) -> Problem:
         if difficulty is not None and difficulty not in VALID_DIFFICULTY_KEYS:
+            logger.warning(
+                'Problem update failed: invalid difficulty=%s id%s',
+                difficulty,
+                problem.id,
+            )
             raise ValidationError('Invalid difficulty level')
 
         update_data = {}
@@ -110,7 +122,7 @@ class ProblemService:
                 category=category,
             )
             return updated, False
-        
+
         new_problem = ProblemService.create_problem(
             title=title,
             description=description,

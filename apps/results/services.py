@@ -26,6 +26,7 @@ class ResultService:
         status: str | None = None,
     ) -> Result:
         if status is not None and status not in STATUS_CHOICES_RESULT:
+            logger.warning('Result creation failed: invalid status=%s', status)
             raise ValidationError('Invalid status level')
 
         result = ResultRepository.create(
@@ -35,7 +36,7 @@ class ResultService:
             actual_output=actual_output,
             execution_time=execution_time,
         )
-        logger.info(
+        logger.debug(
             'result created id=%s submission_id=%s test_case_id=%s status=%s',
             result.id,
             submission.id,
@@ -52,6 +53,11 @@ class ResultService:
         execution_time: float | None = None,
     ) -> Result:
         if status is not None and status not in STATUS_CHOICES_RESULT:
+            logger.warning(
+                'Result update failed: invalid status=%s id=%s',
+                status,
+                result.id,
+            )
             raise ValidationError('Invalid status level')
 
         changed = []
@@ -85,7 +91,9 @@ class ResultService:
         result = ResultRepository.get_by_id(result_id, user)
 
         if not result:
-            logger.warning('result not found id=%s', result_id)
+            logger.warning(
+                'result not found result_id=%s user_id=%s', result_id, user.id
+            )
             raise Result.DoesNotExist(f'Result with id {result_id} not found')
 
         return result
