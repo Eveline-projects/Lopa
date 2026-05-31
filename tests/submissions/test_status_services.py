@@ -41,7 +41,7 @@ class TestSubmissionEvaluationService:
     def test_submission_evaluate_service_should_all_passed(
         self, test_case, submission
     ):
-        submission.code = test_case.expected_output
+        submission.code = f'print("""{test_case.expected_output}""")'
         result = SubmissionEvaluationService.evaluate(submission)
 
         assert result.status == Submission.Status.DONE

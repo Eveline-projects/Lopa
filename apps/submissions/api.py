@@ -8,6 +8,7 @@ from apps.problems.exceptions import ProblemNotFound
 from .models import Submission
 from .schemas import SubmissionSchema, SubmissionCreateSchema
 from .services import SubmissionService
+from apps.submissions.services import SubmissionEvaluationService
 
 logger = logging.getLogger(__name__)
 
@@ -34,13 +35,18 @@ def create_submission(request, problem_id: UUID, data: SubmissionCreateSchema):
         user_id,
         len(data.code) if data.code else 0,
     )
+
     try:
         submission = SubmissionService.create_submission(
             user=request.user,
             problem_id=problem_id,
             code=data.code,
         )
+
+        SubmissionEvaluationService.evaluate(submission)
+
         return Status(201, submission)
+
     except ProblemNotFound:
         raise HttpError(404, 'Problem not found')
     except ValidationError as e:

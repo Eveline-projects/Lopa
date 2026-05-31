@@ -10,7 +10,7 @@ class TestSubmissionFlow:
         e2e_page.goto(f'{live_server.url}/problems/{problem.id}/')
 
         expected = problem.test_cases.first().expected_output
-        e2e_page.fill('#code-input', expected)
+        e2e_page.fill('#code-input', f'print("""{expected}""")')
         e2e_page.click('#submit-btn')
 
         results_container = e2e_page.locator('#results-table-body')
@@ -19,7 +19,7 @@ class TestSubmissionFlow:
     def test_different_statuses(self, e2e_page, live_server, problem):
         e2e_page.goto(f'{live_server.url}/problems/{problem.id}/')
 
-        e2e_page.fill('#code-input', 'wrong')
+        e2e_page.fill('#code-input', 'print("Completely wrong result")')
         e2e_page.click('#submit-btn')
 
         results_container = e2e_page.locator('#results-table-body')

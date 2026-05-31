@@ -1,5 +1,6 @@
 import logging
-
+import tempfile
+import subprocess
 from apps.results.models import Result
 from apps.results.repositories import ResultRepository
 from .models import Submission
@@ -57,33 +58,52 @@ class SubmissionEvaluationService:
 
         try:
             for test_case in test_cases:
-                code = submission.code.strip()
-                expected_output = test_case.expected_output.strip()
+                with tempfile.NamedTemporaryFile(mode='w', suffix='.py') as fp:
+                    fp.write(submission.code.strip())
+                    fp.flush()
 
-                if code == expected_output:
-                    result_status = Result.Status.PASSED
-                    actual_output = code
-                else:
-                    result_status = Result.Status.WRONG_ANSWER
-                    actual_output = code
+                    expected_output = test_case.expected_output.strip()
 
-                result = ResultRepository.create(
-                    submission=submission,
-                    test_case=test_case,
-                    actual_output=actual_output,
-                    execution_time=0.1
-                    if result_status == Result.Status.PASSED
-                    else 0.5,
-                    status=result_status,
-                )
-                created_results.append(result)
+                    try:
+                        process = subprocess.run(
+                            ['python', fp.name],
+                            input=test_case.input_data,
+                            capture_output=True,
+                            text=True,
+                            timeout=2.0,
+                        )
 
-                logger.debug(
-                    'Evaluated test_case_id=%s for submission_id=%s status=%s',
-                    test_case.id,
-                    submission.id,
-                    result_status,
-                )
+                        if process.returncode == 0:
+                            actual_output = process.stdout.strip()
+                            if actual_output == expected_output:
+                                result_status = Result.Status.PASSED
+                            else:
+                                result_status = Result.Status.WRONG_ANSWER
+                        else:
+                            actual_output = process.stderr.strip()
+                            result_status = Result.Status.RUNTIME_ERROR
+
+                    except subprocess.TimeoutExpired:
+                        actual_output = 'Time Limit Exceeded'
+                        result_status = Result.Status.TIME_LIMIT_EXCEEDED
+
+                    result = ResultRepository.create(
+                        submission=submission,
+                        test_case=test_case,
+                        actual_output=actual_output,
+                        execution_time=0.1
+                        if result_status == Result.Status.PASSED
+                        else 0.5,
+                        status=result_status,
+                    )
+                    created_results.append(result)
+
+                    logger.debug(
+                        'Evaluated test_case_id=%s for submission_id=%s status=%s',
+                        test_case.id,
+                        submission.id,
+                        result_status,
+                    )
 
             submission.status = SubmissionStatusService.resolve(
                 created_results
