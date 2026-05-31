@@ -17,7 +17,7 @@ class Command(BaseCommand):
             'file_path', type=str, help='Path to the JSON file'
         )
 
-    def handle(self, *args, **options): 
+    def handle(self, *args, **options):
         file_path = options['file_path']
 
         logger.info('Starting problem seeding from file=%s', file_path)
@@ -72,7 +72,7 @@ class Command(BaseCommand):
                                 TestCaseService.create_test_case(
                                     problem_id=problem.id,
                                     input_data=tc['input_data'],
-                                    expected_output=tc['expected_output']
+                                    expected_output=tc['expected_output'],
                                 )
 
                         if created:
