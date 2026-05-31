@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from apps.problems.services import ProblemService
+from apps.test_cases.services import TestCaseService
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,7 @@ class Command(BaseCommand):
             'file_path', type=str, help='Path to the JSON file'
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options): 
         file_path = options['file_path']
 
         logger.info('Starting problem seeding from file=%s', file_path)
@@ -65,6 +66,14 @@ class Command(BaseCommand):
                             category=item['category'],
                             is_active=item.get('is_active', True),
                         )
+
+                        if 'test_cases' in item:
+                            for tc in item['test_cases']:
+                                TestCaseService.create_test_case(
+                                    problem_id=problem.id,
+                                    input_data=tc['input_data'],
+                                    expected_output=tc['expected_output']
+                                )
 
                         if created:
                             created_count += 1
