@@ -82,7 +82,7 @@ class TestSubmissionEvaluationService:
             patch(
                 'apps.submissions.status_services.os.getpgid'
             ) as mock_getpgid,
-            patch('apps.submissions.status_services.os.killpg') as mock_killpg,
+            patch('apps.submissions.status_services.os.killpg'),
         ):
             mock_process = MagicMock()
             mock_process.pid = 99999

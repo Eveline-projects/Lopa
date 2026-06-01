@@ -44,7 +44,7 @@ def create_submission(request, problem_id: UUID, data: SubmissionCreateSchema):
         )
         try:
             SubmissionEvaluationService.evaluate(submission)
-        except Exception as eval_err:
+        except Exception:
             logger.error(
                 'Evaluation engine failed for submission_id=%s, but submission was successfully saved to DB.',
                 submission.id,
