@@ -65,7 +65,7 @@
                 "expected_output": "1"
             },
             {
-                "input_data": " ",
+                "input_data": "",
                 "expected_output": "0"
             }
         ]

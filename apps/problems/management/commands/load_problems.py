@@ -68,6 +68,8 @@ class Command(BaseCommand):
                         )
 
                         if 'test_cases' in item:
+                            problem.test_cases.all().delete()
+
                             for tc in item['test_cases']:
                                 TestCaseService.create_test_case(
                                     problem_id=problem.id,

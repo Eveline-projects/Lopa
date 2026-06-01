@@ -152,3 +152,32 @@ class LoadProblemsCommandTest(TestCase):
         self.assertIn('Invalid difficulty', err.getvalue())
         self.assertIn('Created new problem: Valid problem', out.getvalue())
         self.assertEqual(mock_upsert.call_count, 2)
+
+    def test_load_problems_is_idempotent_and_does_not_duplicate_test_cases(
+        self,
+    ):
+        data_with_tests = [
+            {
+                'title': 'Idempotent Problem',
+                'description': 'Testing duplicates',
+                'difficulty': 'easy',
+                'category': 'Arrays',
+                'is_active': True,
+                'test_cases': [
+                    {'input_data': '1', 'expected_output': '1'},
+                    {'input_data': '2', 'expected_output': '2'},
+                ],
+            }
+        ]
+
+        with open(self.test_file, 'w', encoding='utf-8') as f:
+            json.dump(data_with_tests, f)
+
+        call_command('load_problems', self.test_file)
+        problem = Problem.objects.get(title='Idempotent Problem')
+
+        self.assertEqual(problem.test_cases.count(), 2)
+
+        call_command('load_problems', self.test_file)
+
+        self.assertEqual(problem.test_cases.count(), 2)
