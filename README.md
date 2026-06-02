@@ -10,11 +10,17 @@ Lopa (from the Polish "łopatologicznie" meaning straightforward or down-to-eart
 - Balanced Gamification: The point system encourages players to solve problems on their own while offering access to hints in exchange for earned points. This allows for a smooth learning experience without getting stuck.
 
 ### Key Features:
-- Core Execution Engine: Automatic verification of solutions with time tracking and isolated environments.
+- Core Execution Engine: Automatic verification of solutions with time tracking and isolated environments. *(See details below)*
 - Knowledge Base (Coming Soon): A blog with step-by-step explanations of algorithms and data structures.
 - Interactive Flashcards (Coming Soon): A quick review of the theory available right as you work through the problem.
 - Hint System (Coming Soon): You'll be able to purchase hints for tasks using points earned in the system.
 - Error reporting: Clear information about `Runtime Error`,  `Time Limit Exceeded` or `Wrong Answer`.
+
+#### ⚙️ How the Execution Engine Works
+The platform features a custom code evaluation engine responsible for safely running user-submitted algorithmic solutions:
+* **Isolation**: User code is written to ephemeral temporary files and executed in an OS-level process using Python's `subprocess` module.
+* **Validation**: The engine captures standard streams (`stdout`) to compare the algorithm's actual output against the expected datasets.
+* **Error & Timeout Protection**: Syntax exceptions are caught via `stderr`. To prevent malicious or poorly optimized code (like infinite loops) from hanging the server, a strict 2.0s hardware-level execution timeout is enforced (`TIME_LIMIT_EXCEEDED`).
 
 ### 🛠 Technologies:
 * **Language:** Python 3.13+ (via `uv`)

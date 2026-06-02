@@ -1,9 +1,18 @@
+import os
+import signal
+import sys
 import logging
-
+import tempfile
+import time
+import subprocess
+from django.conf import settings
 from apps.results.models import Result
 from apps.results.repositories import ResultRepository
 from .models import Submission
 from .repositories import SubmissionRepository
+
+TIMEOUT_LIMIT = getattr(settings, 'SUBMISSION_TIMEOUT', 2.0)
+MAX_OUTPUT_SIZE = 64 * 1024
 
 logger = logging.getLogger(__name__)
 
@@ -57,33 +66,98 @@ class SubmissionEvaluationService:
 
         try:
             for test_case in test_cases:
-                code = submission.code.strip()
-                expected_output = test_case.expected_output.strip()
+                with tempfile.NamedTemporaryFile(mode='w', suffix='.py') as fp:
+                    fp.write(submission.code.strip())
+                    fp.flush()
 
-                if code == expected_output:
-                    result_status = Result.Status.PASSED
-                    actual_output = code
-                else:
-                    result_status = Result.Status.WRONG_ANSWER
-                    actual_output = code
+                    expected_output = test_case.expected_output.strip()
 
-                result = ResultRepository.create(
-                    submission=submission,
-                    test_case=test_case,
-                    actual_output=actual_output,
-                    execution_time=0.1
-                    if result_status == Result.Status.PASSED
-                    else 0.5,
-                    status=result_status,
-                )
-                created_results.append(result)
+                    actual_output = ''
+                    result_status = Result.Status.RUNTIME_ERROR
+                    execution_time = 0.0
 
-                logger.debug(
-                    'Evaluated test_case_id=%s for submission_id=%s status=%s',
-                    test_case.id,
-                    submission.id,
-                    result_status,
-                )
+                    try:
+                        process = subprocess.Popen(
+                            [sys.executable, fp.name],
+                            stdin=subprocess.PIPE,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            text=True,
+                            start_new_session=True,
+                        )
+
+                        try:
+                            start_time = time.perf_counter()
+
+                            stdout_data, stderr_data = process.communicate(
+                                input=test_case.input_data,
+                                timeout=TIMEOUT_LIMIT,
+                            )
+
+                            execution_time = time.perf_counter() - start_time
+
+                            stdout_data = (
+                                stdout_data[:MAX_OUTPUT_SIZE]
+                                if stdout_data
+                                else ''
+                            )
+                            stderr_data = (
+                                stderr_data[:MAX_OUTPUT_SIZE]
+                                if stderr_data
+                                else ''
+                            )
+
+                            if process.returncode == 0:
+                                actual_output = stdout_data.strip()
+
+                                normalized_actual = ' '.join(
+                                    actual_output.split()
+                                )
+                                normalized_expected = ' '.join(
+                                    expected_output.strip().split()
+                                )
+
+                                if normalized_actual == normalized_expected:
+                                    result_status = Result.Status.PASSED
+                                else:
+                                    result_status = Result.Status.WRONG_ANSWER
+                            else:
+                                actual_output = stderr_data.strip()
+                                result_status = Result.Status.RUNTIME_ERROR
+
+                        except subprocess.TimeoutExpired:
+                            try:
+                                os.killpg(
+                                    os.getpgid(process.pid), signal.SIGKILL
+                                )
+                            except ProcessLookupError:
+                                pass
+
+                            execution_time = time.perf_counter() - start_time
+                            stdout_data, stderr_data = process.communicate()
+                            actual_output = 'Time Limit Exceeded'
+                            result_status = Result.Status.TIME_LIMIT_EXCEEDED
+
+                    except Exception as engine_err:
+                        logger.error('Execution engine error: %s', engine_err)
+                        actual_output = str(engine_err)
+                        result_status = Result.Status.RUNTIME_ERROR
+
+                    result = ResultRepository.create(
+                        submission=submission,
+                        test_case=test_case,
+                        actual_output=actual_output,
+                        execution_time=execution_time,
+                        status=result_status,
+                    )
+                    created_results.append(result)
+
+                    logger.debug(
+                        'Evaluated test_case_id=%s for submission_id=%s status=%s',
+                        test_case.id,
+                        submission.id,
+                        result_status,
+                    )
 
             submission.status = SubmissionStatusService.resolve(
                 created_results
