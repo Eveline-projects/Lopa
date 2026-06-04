@@ -1,0 +1,32 @@
+from celery import shared_task
+from uuid import UUID
+import logging
+from apps.submissions.models import Submission
+from apps.submissions.status_services import SubmissionEvaluationService
+
+logger = logging.getLogger(__name__)
+
+
+@shared_task
+def evaluate_submission_task(submission_id: UUID) -> None:
+    """
+    Asynchronously fetches a submission from the database and triggers its evaluation.
+    Accepts submission_id as a string due to Celery JSON serialization limits.
+    """
+
+    try:
+        # Using string ID is safe; Django's ORM handles the conversion to UUID automatically
+        submission = Submission.objects.get(id=submission_id)
+        SubmissionEvaluationService.evaluate(submission)
+
+    except Submission.DoesNotExist:
+        logger.warning(
+            f'Submission with ID {submission_id} was not found in the database.'
+        )
+
+    except Exception as e:
+        logger.error(
+            f'Celery caught unexpected error during evaluation: {e}',
+            exc_info=True,
+        )
+        raise

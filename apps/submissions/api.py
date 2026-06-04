@@ -8,7 +8,7 @@ from apps.problems.exceptions import ProblemNotFound
 from .models import Submission
 from .schemas import SubmissionSchema, SubmissionCreateSchema
 from .services import SubmissionService
-from apps.submissions.services import SubmissionEvaluationService
+from apps.submissions.tasks import evaluate_submission_task
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ def get_submission(request, submission_id: UUID):
 
 
 @router.post(
-    '/problems/{problem_id}/submissions/', response={201: SubmissionSchema}
+    '/problems/{problem_id}/submissions/', response={202: SubmissionSchema}
 )
 def create_submission(request, problem_id: UUID, data: SubmissionCreateSchema):
     user_id = getattr(request.user, 'id', None)
@@ -42,8 +42,10 @@ def create_submission(request, problem_id: UUID, data: SubmissionCreateSchema):
             problem_id=problem_id,
             code=data.code,
         )
+
         try:
-            SubmissionEvaluationService.evaluate(submission)
+            evaluate_submission_task.delay(submission.id)
+
         except Exception:
             logger.error(
                 'Evaluation engine failed for submission_id=%s, but submission was successfully saved to DB.',
@@ -51,7 +53,7 @@ def create_submission(request, problem_id: UUID, data: SubmissionCreateSchema):
                 exc_info=True,
             )
 
-        return Status(201, submission)
+        return Status(202, submission)
 
     except ProblemNotFound:
         raise HttpError(404, 'Problem not found')
