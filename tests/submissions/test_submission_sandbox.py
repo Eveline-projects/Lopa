@@ -1,18 +1,20 @@
 import pytest
 import docker
 import requests
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 from apps.results.models import Result
 from apps.submissions.sandbox import run_code_in_sandbox
 
 
 @pytest.mark.django_db
-@patch('apps.submissions.sandbox.client.containers.run')
+@patch('apps.submissions.sandbox.docker.from_env')
 class TestRunCodeInSandbox:
     def test_run_code_in_sandbox_should_return_passed_on_success(
-        self, mock_docker_run
+        self, mock_from_env
     ):
-        mock_docker_run.return_value = b'Hello World\n'
+        mock_client = MagicMock()
+        mock_client.containers.run.return_value = b'Hello World\n'
+        mock_from_env.return_value = mock_client
 
         output, exec_time, status = run_code_in_sandbox('/tmp/fake_dir')
 
@@ -22,8 +24,9 @@ class TestRunCodeInSandbox:
         assert exec_time >= 0.0
 
     def test_run_code_in_sandbox_should_return_runtime_error_on_container_crash(
-        self, mock_docker_run
+        self, mock_from_env
     ):
+        mock_client = MagicMock()
         container_exception = docker.errors.ContainerError(
             container=None,
             exit_status=1,
@@ -31,7 +34,8 @@ class TestRunCodeInSandbox:
             image='python:3.11-alpine',
             stderr=b'ZeroDivisionError: division by zero\n',
         )
-        mock_docker_run.side_effect = container_exception
+        mock_client.containers.run.side_effect = container_exception
+        mock_from_env.return_value = mock_client
 
         output, exec_time, status = run_code_in_sandbox('/tmp/fake_dir')
 
@@ -40,11 +44,13 @@ class TestRunCodeInSandbox:
         assert isinstance(exec_time, float)
 
     def test_run_code_in_sandbox_should_return_time_limit_exceeded_on_timeout(
-        self, mock_docker_run
+        self, mock_from_env
     ):
-        mock_docker_run.side_effect = requests.exceptions.Timeout(
+        mock_client = MagicMock()
+        mock_client.containers.run.side_effect = requests.exceptions.Timeout(
             'Container timed out'
         )
+        mock_from_env.return_value = mock_client
 
         output, exec_time, status = run_code_in_sandbox('/tmp/fake_dir')
 
@@ -53,11 +59,13 @@ class TestRunCodeInSandbox:
         assert isinstance(exec_time, float)
 
     def test_run_code_in_sandbox_should_return_runtime_error_on_fatal_system_exception(
-        self, mock_docker_run
+        self, mock_from_env
     ):
-        mock_docker_run.side_effect = Exception(
+        mock_client = MagicMock()
+        mock_client.containers.run.side_effect = Exception(
             'Docker daemon connection lost'
         )
+        mock_from_env.return_value = mock_client
 
         output, exec_time, status = run_code_in_sandbox('/tmp/fake_dir')
 
