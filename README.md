@@ -18,13 +18,17 @@ Lopa (from the Polish "łopatologicznie" meaning straightforward or down-to-eart
 
 #### ⚙️ How the Execution Engine Works
 The platform features a custom code evaluation engine responsible for safely running user-submitted algorithmic solutions:
-* **Isolation**: User code is written to ephemeral temporary files and executed in an OS-level process using Python's `subprocess` module.
-* **Validation**: The engine captures standard streams (`stdout`) to compare the algorithm's actual output against the expected datasets.
-* **Error & Timeout Protection**: Syntax exceptions are caught via `stderr`. To prevent malicious or poorly optimized code (like infinite loops) from hanging the server, a strict 2.0s hardware-level execution timeout is enforced (`TIME_LIMIT_EXCEEDED`).
+* **Isolation (Docker)**: User code is executed inside ephemeral, isolated Docker containers (`python:3.11-alpine`). The solution directory is mounted as read-only (`ro`), blocking any access to the host filesystem, internal databases, or application secrets (like Django's `SECRET_KEY`).
+**Asynchronous Processing (Celery)**: Submissions are offloaded to background workers using Celery and Redis. The API immediately returns a `202 Accepted` status, avoiding HTTP thread blocking and mitigating potential DoS attacks.
+**Resource & Timeout Protection**: Containers are strictly capped with hardware-level execution limits. To prevent infinite loops or fork bombs from hanging the system, an automatic timeout (default 2.0s, pulled from Django settings) terminates the entire container process group instantly.
+* **Validation**: The engine safely captures the containerized `stdout` and compares the normalized output against the expected datasets, logging detailed statuses such as `PASSED`, `WRONG_ANSWER`, `RUNTIME_ERROR`, or `TIME_LIMIT_EXCEEDED`.
 
 ### 🛠 Technologies:
 * **Language:** Python 3.13+ (via `uv`)
 * **Framework:** Django 6.0.x
+* **Asynchronous Tasks:** Celery 5.6+ (Background worker architecture)
+* **Message Broker:** Redis (Task queue management)
+* **Sandboxing:** Docker Engine (Isolated environment execution via Docker SDK)
 * **API Layer:** Django Ninja
 * **Schemas / Validation:** Django Ninja Schema (Pydantic-based)
 * **Package Manager:** uv (Extremely fast Python package installer and resolver)
