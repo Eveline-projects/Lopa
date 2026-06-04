@@ -43,7 +43,7 @@ class TestSubmissionApi:
         assert response.status_code == 404
         assert response.json()['detail'] == 'Submission not found'
 
-    def test_create_submission_should_return_201(
+    def test_create_submission_should_return_202(
         self, user, problem, monkeypatch
     ):
         monkeypatch.setattr(
@@ -58,7 +58,7 @@ class TestSubmissionApi:
             f'/problems/{problem.id}/submissions/', json=payload, user=user
         )
 
-        assert response.status_code == 201
+        assert response.status_code == 202
         data = response.json()
         assert data['problem_id'] == str(problem.id)
         assert data['status'] == 'PENDING'
@@ -90,7 +90,7 @@ class TestSubmissionApi:
             f'/problems/{problem.id}/submissions/', json=payload, user=user
         )
 
-        assert response.status_code == 201
+        assert response.status_code == 202
         assert Submission.objects.count() == 1
 
         submission = Submission.objects.first()
