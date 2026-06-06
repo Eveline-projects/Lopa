@@ -8,48 +8,74 @@ from apps.results.models import Result
 
 logger = logging.getLogger(__name__)
 
-TIMEOUT_LIMIT = getattr(settings, 'SUBMISSION_TIMEOUT', 2.0)
 
-
-def run_code_in_sandbox(temp_dir_path: str) -> tuple[str, float, str]:
+def run_code_in_sandbox(
+    code_content: str, input_data: str = ''
+) -> tuple[str, float, str]:
+    timeout_limit = getattr(settings, 'SUBMISSION_TIMEOUT', 5.0)
+    client = docker.from_env()
     start_time = time.perf_counter()
+    container = None
+
+    cmd = f'echo {repr(input_data)} | python -c {repr(code_content)}'
 
     try:
-        client = docker.from_env()
+        # Configure bomb protection and memory limits
+        ulimits = [{'Name': 'nproc', 'Soft': 50, 'Hard': 50}]
 
         # Run the container synchronously and wait for it to finish
-        logs = client.containers.run(
-            image='python:3.11-alpine',
-            command="sh -c 'python /app/solution.py < /app/input.txt'",
-            volumes={
-                temp_dir_path: {
-                    'bind': '/app',
-                    'mode': 'ro',
-                }  # 'ro' ensures user code cannot alter test files
-            },
-            timeout=TIMEOUT_LIMIT,
+        container = client.containers.run(
+            image='python:3.13-alpine',
+            command=['sh', '-c', cmd],
+            network_mode='none',
+            mem_limit='128m',
+            nano_cpus=1000000000,
+            pids_limit=64,
+            ulimits=ulimits,
+            detach=True,
         )
 
+        try:
+            result_status = container.wait(timeout=timeout_limit)
+            exit_code = result_status.get('StatusCode', 0)
+        except (
+            requests.exceptions.ConnectionError,
+            requests.exceptions.ReadTimeout,
+        ):
+            try:
+                container.kill()
+            except Exception:
+                pass
+            execution_time = time.perf_counter() - start_time
+            return (
+                'Time Limit Exceeded',
+                execution_time,
+                Result.Status.TIME_LIMIT_EXCEEDED,
+            )
+
         execution_time = time.perf_counter() - start_time
-        actual_output = logs.decode('utf-8').strip()
+        raw_logs = container.logs(stdout=True, stderr=True)
+        max_bytes = 10 * 1024
+        actual_output = (
+            raw_logs[:max_bytes].decode('utf-8', errors='replace').strip()
+        )
+
+        if exit_code != 0:
+            return (
+                actual_output if actual_output else 'Runtime Error',
+                execution_time,
+                Result.Status.RUNTIME_ERROR,
+            )
 
         return actual_output, execution_time, Result.Status.PASSED
 
-    except docker.errors.ContainerError as e:
-        # Code exited with non-zero status (e.g., SyntaxError, ZeroDivisionError)
-        execution_time = time.perf_counter() - start_time
-        error_logs = e.stderr.decode('utf-8') if e.stderr else str(e)
-        return error_logs.strip(), execution_time, Result.Status.RUNTIME_ERROR
-
-    except requests.exceptions.Timeout as e:
-        execution_time = time.perf_counter() - start_time
-        logger.error('Sandbox has timeout: %s', e)
-        return (
-            'Time Limit Exceeded',
-            execution_time,
-            Result.Status.TIME_LIMIT_EXCEEDED,
-        )
-
     except Exception as e:
-        logger.error('Sandbox fatal error: %s', e)
-        return str(e), 0.0, Result.Status.RUNTIME_ERROR
+        execution_time = time.perf_counter() - start_time
+        return str(e), execution_time, Result.Status.RUNTIME_ERROR
+
+    finally:
+        if container:
+            try:
+                container.remove(force=True)
+            except Exception:
+                pass

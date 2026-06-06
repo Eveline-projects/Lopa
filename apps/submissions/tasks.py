@@ -1,5 +1,5 @@
 from celery import shared_task
-from uuid import UUID
+from docker.errors import APIError, DockerException
 import logging
 from apps.submissions.models import Submission
 from apps.submissions.status_services import SubmissionEvaluationService
@@ -7,8 +7,13 @@ from apps.submissions.status_services import SubmissionEvaluationService
 logger = logging.getLogger(__name__)
 
 
-@shared_task
-def evaluate_submission_task(submission_id: UUID) -> None:
+@shared_task(
+    bind=True,
+    autoretry_for=(APIError, DockerException, ConnectionError),
+    retry_backoff=True,
+    retry_kwargs={'max_retries': 3},
+)
+def evaluate_submission_task(self, submission_id: str) -> None:
     """
     Asynchronously fetches a submission from the database and triggers its evaluation.
     Accepts submission_id as a string due to Celery JSON serialization limits.

@@ -9,19 +9,26 @@ from apps.submissions.sandbox import run_code_in_sandbox
 @pytest.mark.django_db
 @patch('apps.submissions.sandbox.docker.from_env')
 class TestRunCodeInSandbox:
+    def setup_method(self):
+        self.mock_container = MagicMock()
+        self.mock_container.wait.return_value = {'StatusCode': 0}
+        self.mock_container.logs.return_value = b'Hello World'
+        self.mock_container.remove = MagicMock()
+
     def test_run_code_in_sandbox_should_return_passed_on_success(
         self, mock_from_env
     ):
         mock_client = MagicMock()
-        mock_client.containers.run.return_value = b'Hello World\n'
+        mock_client.containers.run.return_value = self.mock_container
         mock_from_env.return_value = mock_client
 
-        output, exec_time, status = run_code_in_sandbox('/tmp/fake_dir')
+        output, execution_time, status = run_code_in_sandbox("print('Hi')")
 
         assert status == Result.Status.PASSED
         assert output == 'Hello World'
-        assert isinstance(exec_time, float)
-        assert exec_time >= 0.0
+        assert isinstance(execution_time, float)
+        assert execution_time >= 0.0
+        self.mock_container.remove.assert_called_once()
 
     def test_run_code_in_sandbox_should_return_runtime_error_on_container_crash(
         self, mock_from_env
@@ -37,26 +44,29 @@ class TestRunCodeInSandbox:
         mock_client.containers.run.side_effect = container_exception
         mock_from_env.return_value = mock_client
 
-        output, exec_time, status = run_code_in_sandbox('/tmp/fake_dir')
+        output, execution_time, status = run_code_in_sandbox('/tmp/fake_dir')
 
         assert status == Result.Status.RUNTIME_ERROR
         assert 'ZeroDivisionError' in output
-        assert isinstance(exec_time, float)
+        assert isinstance(execution_time, float)
 
     def test_run_code_in_sandbox_should_return_time_limit_exceeded_on_timeout(
         self, mock_from_env
     ):
         mock_client = MagicMock()
-        mock_client.containers.run.side_effect = requests.exceptions.Timeout(
-            'Container timed out'
+        mock_client.containers.run.return_value = self.mock_container
+        self.mock_container.wait.side_effect = (
+            requests.exceptions.ReadTimeout()
         )
         mock_from_env.return_value = mock_client
 
-        output, exec_time, status = run_code_in_sandbox('/tmp/fake_dir')
+        output, execution_time, status = run_code_in_sandbox('infinite_loop()')
 
         assert status == Result.Status.TIME_LIMIT_EXCEEDED
         assert output == 'Time Limit Exceeded'
-        assert isinstance(exec_time, float)
+        assert isinstance(execution_time, float)
+        self.mock_container.kill.assert_called_once()
+        self.mock_container.remove.assert_called_once()
 
     def test_run_code_in_sandbox_should_return_runtime_error_on_fatal_system_exception(
         self, mock_from_env
@@ -67,8 +77,25 @@ class TestRunCodeInSandbox:
         )
         mock_from_env.return_value = mock_client
 
-        output, exec_time, status = run_code_in_sandbox('/tmp/fake_dir')
+        output, execution_time, status = run_code_in_sandbox('/tmp/fake_dir')
 
         assert status == Result.Status.RUNTIME_ERROR
         assert 'Docker daemon connection lost' in output
-        assert exec_time == 0.0
+        assert execution_time >= 0.0
+
+
+@pytest.mark.integration
+class TestRunCodeInSandboxIntegration:
+    def test_should_real_docker_execution(self):
+        try:
+            docker.from_env().ping()
+        except Exception:
+            pytest.skip('Docker daemon is not available - I skip the test')
+
+        output, execution_time, status = run_code_in_sandbox(
+            "print('Integration test')"
+        )
+
+        assert status == Result.Status.PASSED
+        assert 'Integration test' in output
+        assert execution_time > 0

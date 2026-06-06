@@ -44,7 +44,7 @@ def create_submission(request, problem_id: UUID, data: SubmissionCreateSchema):
         )
 
         try:
-            evaluate_submission_task.delay(submission.id)
+            evaluate_submission_task.delay(str(submission.id))
 
         except Exception:
             logger.error(

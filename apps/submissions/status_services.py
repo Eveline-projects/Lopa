@@ -1,6 +1,4 @@
-import os
 import logging
-import tempfile
 from apps.results.models import Result
 from apps.results.repositories import ResultRepository
 from .models import Submission
@@ -62,41 +60,36 @@ class SubmissionEvaluationService:
 
         try:
             for test_case in test_cases:
-                with tempfile.TemporaryDirectory() as temp_dir:
-                    with open(os.path.join(temp_dir, 'solution.py'), 'w') as f:
-                        f.write(submission.code.strip())
+                expected_output = test_case.expected_output.strip()
 
-                    with open(os.path.join(temp_dir, 'input.txt'), 'w') as f:
-                        f.write(test_case.input_data)
-
-                    expected_output = test_case.expected_output.strip()
-
-                    actual_output, execution_time, result_status = (
-                        run_code_in_sandbox(temp_dir)
+                actual_output, execution_time, result_status = (
+                    run_code_in_sandbox(
+                        submission.code.strip(), test_case.input_data
                     )
+                )
 
-                    if result_status == Result.Status.PASSED:
-                        normalized_actual = ' '.join(actual_output.split())
-                        normalized_expected = ' '.join(expected_output.split())
+                if result_status == Result.Status.PASSED:
+                    normalized_actual = ' '.join(actual_output.split())
+                    normalized_expected = ' '.join(expected_output.split())
 
-                        if normalized_actual != normalized_expected:
-                            result_status = Result.Status.WRONG_ANSWER
+                    if normalized_actual != normalized_expected:
+                        result_status = Result.Status.WRONG_ANSWER
 
-                    result = ResultRepository.create(
-                        submission=submission,
-                        test_case=test_case,
-                        actual_output=actual_output[:MAX_OUTPUT_SIZE],
-                        execution_time=execution_time,
-                        status=result_status,
-                    )
-                    created_results.append(result)
+                result = ResultRepository.create(
+                    submission=submission,
+                    test_case=test_case,
+                    actual_output=actual_output[:MAX_OUTPUT_SIZE],
+                    execution_time=execution_time,
+                    status=result_status,
+                )
+                created_results.append(result)
 
-                    logger.debug(
-                        'Evaluated test_case_id=%s for submission_id=%s status=%s',
-                        test_case.id,
-                        submission.id,
-                        result_status,
-                    )
+                logger.debug(
+                    'Evaluated test_case_id=%s for submission_id=%s status=%s',
+                    test_case.id,
+                    submission.id,
+                    result_status,
+                )
 
             submission.status = SubmissionStatusService.resolve(
                 created_results
@@ -126,4 +119,4 @@ class SubmissionEvaluationService:
                     submission.id,
                     str(db_error),
                 )
-            raise e
+            raise

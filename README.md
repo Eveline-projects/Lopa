@@ -18,10 +18,10 @@ Lopa (from the Polish "łopatologicznie" meaning straightforward or down-to-eart
 
 #### ⚙️ How the Execution Engine Works
 The platform features a custom code evaluation engine responsible for safely running user-submitted algorithmic solutions:
-* **Isolation (Docker)**: User code is executed inside ephemeral, isolated Docker containers (`python:3.11-alpine`). The solution directory is mounted as read-only (`ro`), blocking any access to the host filesystem, internal databases, or application secrets (like Django's `SECRET_KEY`).
-**Asynchronous Processing (Celery)**: Submissions are offloaded to background workers using Celery and Redis. The API immediately returns a `202 Accepted` status, avoiding HTTP thread blocking and mitigating potential DoS attacks.
-**Resource & Timeout Protection**: Containers are strictly capped with hardware-level execution limits. To prevent infinite loops or fork bombs from hanging the system, an automatic timeout (default 2.0s, pulled from Django settings) terminates the entire container process group instantly.
-* **Validation**: The engine safely captures the containerized `stdout` and compares the normalized output against the expected datasets, logging detailed statuses such as `PASSED`, `WRONG_ANSWER`, `RUNTIME_ERROR`, or `TIME_LIMIT_EXCEEDED`.
+* **Isolation & Sandboxing (Docker)**: User code is executed inside ephemeral, fully isolated Docker containers (`python:3.13-alpine`). We pass code and inputs directly via memory streams (`stdin`), eliminating host file system mounting entirely. Network access is completely disabled (`network_mode='none'`), blocking any potential data exfiltration or access to internal databases.
+* **Asynchronous Processing (Celery)**: Submissions are offloaded to background workers using Celery and Redis. The API immediately returns a `202 Accepted` status, avoiding HTTP thread blocking and mitigating potential DoS attacks.
+* **Resource & Timeout Protection**: Containers are strictly capped with hardware-level limits (e.g., 128MB RAM, restricted CPU usage, `pids_limit`, and `nproc` limits) to prevent fork bombs or memory exhaustion. An automatic timeout (default 5.0s) terminates and force-removes the container to prevent infinite loops from hanging the system.
+* **Validation & Safety**: The engine safely captures the containerized `stdout`, truncating it to prevent memory bloat from massive logs. It then normalizes and compares the output against expected datasets, accurately returning statuses such as `PASSED`, `WRONG_ANSWER`, `RUNTIME_ERROR`, or `TIME_LIMIT_EXCEEDED`.
 
 ### 🛠 Technologies:
 * **Language:** Python 3.13+ (via `uv`)
