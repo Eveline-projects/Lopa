@@ -1,5 +1,4 @@
 import pytest
-import subprocess
 from unittest.mock import MagicMock, patch
 
 from apps.submissions.models import Submission
@@ -38,11 +37,17 @@ class TestSubmissionStatusService:
 
 
 @pytest.mark.django_db
+@patch('apps.submissions.status_services.run_code_in_sandbox')
 class TestSubmissionEvaluationService:
     def test_submission_evaluate_service_should_all_passed(
-        self, test_case, submission
+        self, mock_sandbox, test_case, submission
     ):
-        submission.code = f'print("""{test_case.expected_output}""")'
+        test_case.problem = submission.problem
+        test_case.expected_output = 'Hello'
+        test_case.save()
+
+        mock_sandbox.return_value = ('Hello', 0.1, Result.Status.PASSED)
+
         result = SubmissionEvaluationService.evaluate(submission)
 
         assert result.status == Submission.Status.DONE
@@ -52,13 +57,18 @@ class TestSubmissionEvaluationService:
         )
 
     def test_submission_evaluate_service_should_wrong_answer(
-        self, submission, test_case
+        self, mock_sandbox, submission, test_case
     ):
 
         test_case.problem = submission.problem
+        test_case.expected_output = 'Expected Output'
         test_case.save()
 
-        submission.code = "print('Hello World')"
+        mock_sandbox.return_value = (
+            'Completely Different Output',
+            0.1,
+            Result.Status.PASSED,
+        )
         result = SubmissionEvaluationService.evaluate(submission)
 
         assert result.status == Submission.Status.WRONG_ANSWER
@@ -68,36 +78,20 @@ class TestSubmissionEvaluationService:
         )
 
     def test_submission_evaluate_service_should_timeout(
-        self, submission, test_case
+        self, mock_sandbox, submission, test_case
     ):
         test_case.problem = submission.problem
         test_case.save()
 
-        submission.code = 'while True: pass'
+        mock_sandbox.return_value = (
+            'Time Limit Exceeded',
+            2.0,
+            Result.Status.TIME_LIMIT_EXCEEDED,
+        )
 
-        with (
-            patch(
-                'apps.submissions.status_services.subprocess.Popen'
-            ) as mock_popen,
-            patch(
-                'apps.submissions.status_services.os.getpgid'
-            ) as mock_getpgid,
-            patch('apps.submissions.status_services.os.killpg'),
-        ):
-            mock_process = MagicMock()
-            mock_process.pid = 99999
-
-            mock_process.communicate.side_effect = [
-                subprocess.TimeoutExpired(cmd='python', timeout=2.0),
-                ('', ''),
-            ]
-
-            mock_popen.return_value = mock_process
-            mock_getpgid.return_value = 99999
-            result = SubmissionEvaluationService.evaluate(submission)
+        result = SubmissionEvaluationService.evaluate(submission)
 
         assert result.status == Submission.Status.ERROR
-
         assert any(
             r.status == Result.Status.TIME_LIMIT_EXCEEDED
             for r in submission.results.all()

@@ -7,15 +7,33 @@ services:
       - .env
     environment:
       DATABASE_URL: postgres://lopa:lopa@db:5432/lopa
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
     ports:
       - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     command: >
       sh -c "python manage.py migrate --noinput &&
              python manage.py seed &&
              python manage.py runserver 0.0.0.0:8000"
+
+  celery_worker:
+    build: .
+    command: uv run celery -A config worker --loglevel=info
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DATABASE_URL: postgres://lopa:lopa@db:5432/lopa
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    depends_on:
+      - redis
+      - db
 
   db:
     image: postgres:17-alpine
@@ -33,6 +51,17 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   pg-data:

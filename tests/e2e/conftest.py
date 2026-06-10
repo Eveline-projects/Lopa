@@ -8,6 +8,11 @@ from apps.test_cases.models import TestCase
 os.environ['DJANGO_ALLOW_ASYNC_UNSAFE'] = 'true'
 
 
+@pytest.fixture(autouse=True)
+def enable_celery_eager_mode(settings):
+    settings.CELERY_TASK_ALWAYS_EAGER = True
+
+
 @pytest.fixture
 def e2e_page(page: Page, live_server, user):
 

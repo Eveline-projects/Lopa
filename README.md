@@ -18,13 +18,17 @@ Lopa (from the Polish "łopatologicznie" meaning straightforward or down-to-eart
 
 #### ⚙️ How the Execution Engine Works
 The platform features a custom code evaluation engine responsible for safely running user-submitted algorithmic solutions:
-* **Isolation**: User code is written to ephemeral temporary files and executed in an OS-level process using Python's `subprocess` module.
-* **Validation**: The engine captures standard streams (`stdout`) to compare the algorithm's actual output against the expected datasets.
-* **Error & Timeout Protection**: Syntax exceptions are caught via `stderr`. To prevent malicious or poorly optimized code (like infinite loops) from hanging the server, a strict 2.0s hardware-level execution timeout is enforced (`TIME_LIMIT_EXCEEDED`).
+* **Isolation & Sandboxing (Docker)**: User code is executed inside ephemeral, fully isolated Docker containers (`python:3.13-alpine`). We pass code and inputs directly via memory streams (`stdin`), eliminating host file system mounting entirely. Network access is completely disabled (`network_mode='none'`), blocking any potential data exfiltration or access to internal databases.
+* **Asynchronous Processing (Celery)**: Submissions are offloaded to background workers using Celery and Redis. The API immediately returns a `202 Accepted` status, avoiding HTTP thread blocking and mitigating potential DoS attacks.
+* **Resource & Timeout Protection**: Containers are strictly capped with hardware-level limits (e.g., 128MB RAM, restricted CPU usage, `pids_limit`, and `nproc` limits) to prevent fork bombs or memory exhaustion. An automatic timeout (default 5.0s) terminates and force-removes the container to prevent infinite loops from hanging the system.
+* **Validation & Safety**: The engine safely captures the containerized `stdout`, truncating it to prevent memory bloat from massive logs. It then normalizes and compares the output against expected datasets, accurately returning statuses such as `PASSED`, `WRONG_ANSWER`, `RUNTIME_ERROR`, or `TIME_LIMIT_EXCEEDED`.
 
 ### 🛠 Technologies:
 * **Language:** Python 3.13+ (via `uv`)
 * **Framework:** Django 6.0.x
+* **Asynchronous Tasks:** Celery 5.6+ (Background worker architecture)
+* **Message Broker:** Redis (Task queue management)
+* **Sandboxing:** Docker Engine (Isolated environment execution via Docker SDK)
 * **API Layer:** Django Ninja
 * **Schemas / Validation:** Django Ninja Schema (Pydantic-based)
 * **Package Manager:** uv (Extremely fast Python package installer and resolver)

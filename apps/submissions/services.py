@@ -9,7 +9,6 @@ from apps.users.models import User
 from .repositories import SubmissionRepository
 from apps.problems.repositories import ProblemRepository
 from apps.problems.exceptions import ProblemNotFound
-from .status_services import SubmissionEvaluationService
 
 logger = logging.getLogger(__name__)
 
@@ -49,15 +48,6 @@ class SubmissionService:
             user.id,
             submission.status,
         )
-        try:
-            SubmissionEvaluationService.evaluate(submission)
-        except Exception as eval_error:
-            logger.error(
-                'Submission created but evaluation failed submission_id=%s error=%s',
-                submission.id,
-                str(eval_error),
-                exc_info=True,
-            )
 
         return submission
 
