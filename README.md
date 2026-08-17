@@ -3,7 +3,7 @@ Lopa is an educational platform built with Python and Django that helps you real
 
 It combines an algorithm practice system (problems, submissions, secure code execution) with a learning layer (articles, flashcards, and hints) so you can read the theory and apply it in one place.
 
-Under the hood, Lopa uses a Docker-based execution engine, Celery workers, Django Ninja APIs, and a fully tested backend (pytest + Playwright E2E) to safely run and validate user-submitted code.
+Under the hood, Lopa uses a Docker-based execution engine, Celery workers, Django Ninja APIs, and a backend tested with pytest and Playwright E2E to safely run and validate user-submitted code.
 
 ## About the project:
 Lopa (from the Polish "łopatologicznie" meaning straightforward or down-to-earth) is my long-term learning project. It’s designed for those who—like me—want to truly grasp how algorithms work. It’s more than just a dry code-grading system; it’s a space for learning through practice, visualization, and a guided hint system.
