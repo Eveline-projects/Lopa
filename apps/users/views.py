@@ -1,8 +1,9 @@
 from django.contrib.auth import login
+from django.contrib.auth.views import LoginView as BaseLoginView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView
-from django.contrib.auth.views import LoginView as BaseLoginView
-from .forms import CreateUserForm, ArchitectLoginForm
+
+from .forms import ArchitectLoginForm, CreateUserForm
 
 
 class HomeView(TemplateView):

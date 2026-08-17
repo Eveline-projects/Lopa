@@ -1,7 +1,9 @@
-import pytest
-import docker
-import requests
 from unittest.mock import MagicMock, patch
+
+import docker
+import pytest
+import requests
+
 from apps.results.models import Result
 from apps.submissions.sandbox import run_code_in_sandbox
 
@@ -89,7 +91,7 @@ class TestRunCodeInSandboxIntegration:
     def test_should_real_docker_execution(self):
         try:
             docker.from_env().ping()
-        except Exception:
+        except Exception:  # noqa: BLE001
             pytest.skip('Docker daemon is not available - I skip the test')
 
         output, execution_time, status = run_code_in_sandbox(

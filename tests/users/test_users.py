@@ -1,7 +1,8 @@
 import pytest
-from django.urls import reverse
 from django.contrib.auth import get_user
-from apps.users.forms import CreateUserForm, ArchitectLoginForm
+from django.urls import reverse
+
+from apps.users.forms import ArchitectLoginForm, CreateUserForm
 
 
 @pytest.mark.django_db

@@ -1,8 +1,10 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView
 from django.db.models import Exists, OuterRef
-from .models import Problem
+from django.views.generic import DetailView, ListView
+
 from apps.submissions.repositories import SubmissionRepository
+
+from .models import Problem
 
 
 class ProblemListView(LoginRequiredMixin, ListView):

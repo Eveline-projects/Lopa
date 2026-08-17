@@ -1,8 +1,10 @@
 import uuid
+
 import pytest
+
+from apps.problems.models import Problem
 from apps.submissions.models import Submission
 from apps.submissions.repositories import SubmissionRepository
-from apps.problems.models import Problem
 
 
 @pytest.mark.django_db

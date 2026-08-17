@@ -1,5 +1,6 @@
-import pytest
 import uuid
+
+import pytest
 
 
 @pytest.mark.django_db

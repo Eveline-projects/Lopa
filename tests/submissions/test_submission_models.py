@@ -1,5 +1,6 @@
-from apps.submissions.models import Submission
 import pytest
+
+from apps.submissions.models import Submission
 
 
 @pytest.mark.django_db

@@ -1,7 +1,10 @@
 from uuid import UUID
+
 from django.db.models import QuerySet
-from .models import TestCase
+
 from apps.problems.models import Problem
+
+from .models import TestCase
 
 
 class TestCaseRepository:

@@ -1,11 +1,13 @@
 import logging
 from uuid import UUID
+
 from ninja import Router, Status
 from ninja.errors import HttpError
 
 from apps.problems.exceptions import ProblemNotFound
+
 from .models import TestCase
-from .schemas import TestCaseSchema, TestCaseCreateSchema
+from .schemas import TestCaseCreateSchema, TestCaseSchema
 from .services import TestCaseService
 
 logger = logging.getLogger(__name__)

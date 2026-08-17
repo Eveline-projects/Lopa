@@ -1,10 +1,12 @@
 from uuid import UUID
-from django.db.models import QuerySet
+
 from django.contrib.auth import get_user_model
+from django.db.models import QuerySet
+
+from apps.submissions.models import Submission
+from apps.test_cases.models import TestCase
 
 from .models import Result
-from apps.test_cases.models import TestCase
-from apps.submissions.models import Submission
 
 User = get_user_model()
 

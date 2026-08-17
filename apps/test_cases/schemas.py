@@ -1,5 +1,6 @@
 from uuid import UUID
-from ninja import Schema, Field
+
+from ninja import Field, Schema
 from pydantic import field_validator
 
 

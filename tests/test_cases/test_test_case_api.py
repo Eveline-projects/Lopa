@@ -1,6 +1,6 @@
-import pytest
 import uuid
 
+import pytest
 from ninja.testing import TestClient
 
 from apps.test_cases.api import router

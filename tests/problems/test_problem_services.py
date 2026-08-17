@@ -1,8 +1,9 @@
 import pytest
 from django.core.exceptions import ValidationError
+
 from apps.problems.exceptions import ProblemNotFound
-from apps.problems.services import ProblemService
 from apps.problems.models import Problem
+from apps.problems.services import ProblemService
 
 
 @pytest.mark.django_db

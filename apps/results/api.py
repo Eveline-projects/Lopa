@@ -1,5 +1,6 @@
 import logging
 from uuid import UUID
+
 from ninja import Router
 from ninja.errors import HttpError
 

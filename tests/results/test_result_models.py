@@ -1,5 +1,7 @@
 import uuid
+
 import pytest
+
 from apps.results.models import Result
 
 

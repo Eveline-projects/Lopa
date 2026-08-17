@@ -1,5 +1,6 @@
-import pytest
 from uuid import UUID
+
+import pytest
 
 from apps.results.models import Result
 from apps.results.repositories import ResultRepository

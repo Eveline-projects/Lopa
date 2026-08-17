@@ -1,10 +1,11 @@
-import docker
-import time
-import requests
 import logging
-from django.conf import settings
-from apps.results.models import Result
+import time
 
+import docker
+import requests
+from django.conf import settings
+
+from apps.results.models import Result
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +18,7 @@ def run_code_in_sandbox(
     start_time = time.perf_counter()
     container = None
 
-    cmd = f'echo {repr(input_data)} | python -c {repr(code_content)}'
+    cmd = f'echo {input_data!r} | python -c {code_content!r}'
 
     try:
         # Configure bomb protection and memory limits
@@ -44,8 +45,8 @@ def run_code_in_sandbox(
         ):
             try:
                 container.kill()
-            except Exception:
-                pass
+            except docker.errors.APIError:
+                logger.warning('Failed to kill container during timeout cleanup')
             execution_time = time.perf_counter() - start_time
             return (
                 'Time Limit Exceeded',
@@ -69,13 +70,14 @@ def run_code_in_sandbox(
 
         return actual_output, execution_time, Result.Status.PASSED
 
-    except Exception as e:
+    except docker.errors.DockerException as e:
         execution_time = time.perf_counter() - start_time
+        logger.exception('Sandbox fatal error')
         return str(e), execution_time, Result.Status.RUNTIME_ERROR
 
     finally:
         if container:
             try:
                 container.remove(force=True)
-            except Exception:
-                pass
+            except docker.errors.APIError as e:
+                logger.warning('Failed to remove container during cleanup: %s', e)

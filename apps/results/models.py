@@ -1,6 +1,7 @@
 import uuid
-from django.db import models
+
 from django.core.validators import MinValueValidator
+from django.db import models
 
 
 class Result(models.Model):
@@ -36,7 +37,7 @@ class Result(models.Model):
     )
 
     class Meta:
-        ordering = ['test_case__id']
+        ordering = ('test_case__id')
 
     def __str__(self):
         return f'Result {self.id} - {self.status}'
