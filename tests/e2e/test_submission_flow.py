@@ -32,6 +32,7 @@ class TestSubmissionFlow:
             mock_sandbox.return_value = (
                 'Completely wrong result',
                 0.1,
+                # Mocking PASSED with incorrect output to force a WRONG_ANSWER status for testing
                 Result.Status.PASSED,
             )
 
