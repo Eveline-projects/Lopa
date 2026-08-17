@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import ResultListView, ResultDetailView
+
+from .views import ResultDetailView, ResultListView
 
 app_name = 'results'
 

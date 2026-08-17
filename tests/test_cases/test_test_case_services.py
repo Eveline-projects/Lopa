@@ -1,8 +1,9 @@
-from django.core.exceptions import ValidationError
 import pytest
-from apps.test_cases.services import TestCaseService
-from apps.test_cases.models import TestCase as ProblemTestCase
+from django.core.exceptions import ValidationError
+
 from apps.problems.models import Problem
+from apps.test_cases.models import TestCase as ProblemTestCase
+from apps.test_cases.services import TestCaseService
 
 
 @pytest.mark.django_db

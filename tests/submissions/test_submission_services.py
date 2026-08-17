@@ -1,7 +1,8 @@
 import pytest
 from django.core.exceptions import ValidationError
-from apps.submissions.services import SubmissionService
+
 from apps.submissions.models import Submission
+from apps.submissions.services import SubmissionService
 
 
 @pytest.mark.django_db
@@ -33,9 +34,9 @@ class TestSubmissionService:
     def test_create_submission_should_raise_error_when_user_is_missing(
         self, problem
     ):
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             SubmissionService.create_submission(
-                user=None, problem_id=problem, code='print(1)'
+                user=None, problem_id=problem.id, code='print(1)'
             )
 
     def test_create_submission_should_not_save_on_empty_code(

@@ -1,9 +1,10 @@
 import os
+
 import pytest
 from playwright.sync_api import Page
+
 from apps.problems.models import Problem
 from apps.test_cases.models import TestCase
-
 
 os.environ['DJANGO_ALLOW_ASYNC_UNSAFE'] = 'true'
 

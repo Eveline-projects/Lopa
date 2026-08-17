@@ -1,7 +1,8 @@
 import pytest
 from django.core.exceptions import ValidationError
-from apps.results.services import ResultService
+
 from apps.results.models import Result
+from apps.results.services import ResultService
 
 
 @pytest.mark.django_db

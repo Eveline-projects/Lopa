@@ -2,9 +2,11 @@ import json
 import os
 from io import StringIO
 from unittest.mock import patch
+
 from django.core.exceptions import ValidationError
-from django.core.management import call_command, CommandError
+from django.core.management import CommandError, call_command
 from django.test import TestCase
+
 from apps.problems.models import Problem
 from apps.problems.services import ProblemService
 

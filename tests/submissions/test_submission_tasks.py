@@ -1,7 +1,9 @@
 from unittest.mock import patch
+
 import pytest
-from apps.submissions.tasks import evaluate_submission_task
+
 from apps.submissions.models import Submission
+from apps.submissions.tasks import evaluate_submission_task
 
 
 @pytest.mark.django_db

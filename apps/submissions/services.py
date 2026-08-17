@@ -4,11 +4,12 @@ from uuid import UUID
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
 
-from .models import Submission
-from apps.users.models import User
-from .repositories import SubmissionRepository
-from apps.problems.repositories import ProblemRepository
 from apps.problems.exceptions import ProblemNotFound
+from apps.problems.repositories import ProblemRepository
+from apps.users.models import User
+
+from .models import Submission
+from .repositories import SubmissionRepository
 
 logger = logging.getLogger(__name__)
 

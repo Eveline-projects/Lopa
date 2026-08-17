@@ -31,6 +31,7 @@ dev = [
     "pytest-django>=4.12.0",
     "pytest-html>=4.2.0",
     "pytest-playwright>=0.7.2",
+    "ruff>=0.16.3",
 ]
 
 [tool.ruff.format]
@@ -39,3 +40,4 @@ quote-style = "single"
 [tool.ruff]
 line-length = 79
 extend-exclude = ["migrations"]
+ignore = ["RUF012"]

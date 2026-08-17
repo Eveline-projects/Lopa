@@ -1,14 +1,16 @@
 import logging
 from uuid import UUID
+
+from django.core.exceptions import ValidationError
 from ninja import Router, Status
 from ninja.errors import HttpError
-from django.core.exceptions import ValidationError
 
 from apps.problems.exceptions import ProblemNotFound
-from .models import Submission
-from .schemas import SubmissionSchema, SubmissionCreateSchema
-from .services import SubmissionService
 from apps.submissions.tasks import evaluate_submission_task
+
+from .models import Submission
+from .schemas import SubmissionCreateSchema, SubmissionSchema
+from .services import SubmissionService
 
 logger = logging.getLogger(__name__)
 
@@ -47,10 +49,9 @@ def create_submission(request, problem_id: UUID, data: SubmissionCreateSchema):
             evaluate_submission_task.delay(str(submission.id))
 
         except Exception:
-            logger.error(
+            logger.exception(
                 'Evaluation engine failed for submission_id=%s, but submission was successfully saved to DB.',
                 submission.id,
-                exc_info=True,
             )
 
         return Status(202, submission)

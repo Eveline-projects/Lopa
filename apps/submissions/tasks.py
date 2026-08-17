@@ -1,6 +1,8 @@
+import logging
+
 from celery import shared_task
 from docker.errors import APIError, DockerException
-import logging
+
 from apps.submissions.models import Submission
 from apps.submissions.status_services import SubmissionEvaluationService
 
@@ -29,9 +31,8 @@ def evaluate_submission_task(self, submission_id: str) -> None:
             f'Submission with ID {submission_id} was not found in the database.'
         )
 
-    except Exception as e:
-        logger.error(
-            f'Celery caught unexpected error during evaluation: {e}',
-            exc_info=True,
+    except Exception:
+        logger.exception(
+            'Celery caught unexpected error during evaluation',
         )
         raise

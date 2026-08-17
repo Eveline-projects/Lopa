@@ -1,13 +1,15 @@
 import logging
 from uuid import UUID
+
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db.models import QuerySet
-from django.contrib.auth import get_user_model
+
+from apps.submissions.models import Submission
+from apps.test_cases.models import TestCase
 
 from .models import Result
 from .repositories import ResultRepository
-from apps.test_cases.models import TestCase
-from apps.submissions.models import Submission
 
 logger = logging.getLogger(__name__)
 

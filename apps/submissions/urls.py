@@ -1,4 +1,5 @@
 from django.urls import path
+
 from .views import UserSubmissionListView
 
 app_name = 'submissions'

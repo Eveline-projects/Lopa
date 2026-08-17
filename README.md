@@ -1,8 +1,12 @@
-# 🐤 Lopa
-Algorithms explained in simple terms. Manage tasks, test code, and learn data structures without unnecessary complexity.
+# 🐤 Lopa - Algorithms Explained in Simple Terms
+Lopa is an educational platform built with Python and Django that helps you really understand how algorithms work — not just copy solutions.
+
+It combines an algorithm practice system (problems, submissions, secure code execution) with a learning layer (articles, flashcards, and hints) so you can read the theory and apply it in one place.
+
+Under the hood, Lopa uses a Docker-based execution engine, Celery workers, Django Ninja APIs, and a backend tested with pytest and Playwright E2E to safely run and validate user-submitted code.
 
 ## About the project:
-Lopa (from the Polish "łopatologicznie" meaning straightforward or down-to-earth) is an educational platform built with Python and Django. It’s designed for those who—like me—want to truly grasp how algorithms work. It’s more than just a dry code-grading system; it’s a space for learning through practice, visualization, and a guided hint system.
+Lopa (from the Polish "łopatologicznie" meaning straightforward or down-to-earth) is my long-term learning project. It’s designed for those who—like me—want to truly grasp how algorithms work. It’s more than just a dry code-grading system; it’s a space for learning through practice, visualization, and a guided hint system.
 
 ### Why Lopa?
 - Understanding the mechanisms: Focusing on the underlying principles of how algorithms work, which allows for intuitive solution design rather than simply replicating existing patterns.

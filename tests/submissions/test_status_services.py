@@ -1,11 +1,12 @@
-import pytest
 from unittest.mock import MagicMock, patch
 
-from apps.submissions.models import Submission
+import pytest
+
 from apps.results.models import Result
+from apps.submissions.models import Submission
 from apps.submissions.status_services import (
-    SubmissionStatusService,
     SubmissionEvaluationService,
+    SubmissionStatusService,
 )
 
 

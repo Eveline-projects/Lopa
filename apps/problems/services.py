@@ -1,9 +1,12 @@
 import logging
 from uuid import UUID
-from django.db.models import QuerySet
+
 from django.core.exceptions import ValidationError
+from django.db.models import QuerySet
+
 from apps.problems.exceptions import ProblemNotFound
-from .models import Problem, DIFFICULTY_CHOICES
+
+from .models import DIFFICULTY_CHOICES, Problem
 from .repositories import ProblemRepository
 
 logger = logging.getLogger(__name__)

@@ -1,9 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, DetailView
 from django.http import Http404
-from .models import Result
-from apps.submissions.services import SubmissionService
+from django.views.generic import DetailView, ListView
+
 from apps.submissions.models import Submission
+from apps.submissions.services import SubmissionService
+
+from .models import Result
 
 
 class ResultListView(LoginRequiredMixin, ListView):

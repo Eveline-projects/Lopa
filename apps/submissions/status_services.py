@@ -1,10 +1,13 @@
 import logging
+
+from django.db import DatabaseError
+
 from apps.results.models import Result
 from apps.results.repositories import ResultRepository
-from .models import Submission
-from .repositories import SubmissionRepository
 from apps.submissions.sandbox import run_code_in_sandbox
 
+from .models import Submission
+from .repositories import SubmissionRepository
 
 MAX_OUTPUT_SIZE = 64 * 1024
 
@@ -103,20 +106,18 @@ class SubmissionEvaluationService:
             )
             return saved
 
-        except Exception as e:
-            logger.error(
-                'Fatal error during submission evaluation id=%s error=%s',
+        except Exception:
+            logger.exception(
+                'Fatal error during submission evaluation id=%s',
                 submission.id,
-                str(e),
-                exc_info=True,
             )
             try:
                 submission.status = Submission.Status.ERROR
                 SubmissionRepository.save(submission)
-            except Exception as db_error:
+            except DatabaseError as db_error:
                 logger.warning(
                     'Could not save error status to submission id=%s reason=%s',
                     submission.id,
-                    str(db_error),
+                    db_error,
                 )
             raise

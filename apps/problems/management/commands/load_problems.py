@@ -1,8 +1,10 @@
 import json
 import logging
+
+from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
-from django.core.exceptions import ValidationError
+
 from apps.problems.services import ProblemService
 from apps.test_cases.services import TestCaseService
 
@@ -116,11 +118,9 @@ class Command(BaseCommand):
 
         except Exception as unexpected_error:
             if isinstance(unexpected_error, CommandError):
-                raise unexpected_error
+                raise
 
-            logger.error(
-                'Unexpected error during problem seeding', exc_info=True
-            )
+            logger.exception('Unexpected error during problem seeding')
             raise CommandError(
                 f'Unexpected error during seeding: {unexpected_error}'
             )

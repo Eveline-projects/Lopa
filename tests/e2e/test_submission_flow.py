@@ -1,6 +1,8 @@
-import pytest
 from unittest.mock import patch
+
+import pytest
 from playwright.sync_api import expect
+
 from apps.results.models import Result
 
 
@@ -32,6 +34,8 @@ class TestSubmissionFlow:
             mock_sandbox.return_value = (
                 'Completely wrong result',
                 0.1,
+                # Intentionally return Status.PASSED with wrong output so the comparison layer
+                # downgrades it to WRONG_ANSWER, allowing us to verify the UI displays WRONG_ANSWER.
                 Result.Status.PASSED,
             )
 

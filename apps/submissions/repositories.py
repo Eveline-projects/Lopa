@@ -1,9 +1,10 @@
 from uuid import UUID
+
 from django.db.models import QuerySet
 
 from apps.problems.models import Problem
-from apps.users.models import User
 from apps.submissions.models import Submission
+from apps.users.models import User
 
 
 class SubmissionRepository:

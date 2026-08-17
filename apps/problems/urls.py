@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import ProblemListView, ProblemDetailView
+
+from .views import ProblemDetailView, ProblemListView
 
 app_name = 'problems'
 
