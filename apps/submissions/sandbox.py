@@ -46,7 +46,9 @@ def run_code_in_sandbox(
             try:
                 container.kill()
             except docker.errors.APIError:
-                logger.warning('Failed to kill container during timeout cleanup')
+                logger.warning(
+                    'Failed to kill container during timeout cleanup'
+                )
             execution_time = time.perf_counter() - start_time
             return (
                 'Time Limit Exceeded',
@@ -80,4 +82,6 @@ def run_code_in_sandbox(
             try:
                 container.remove(force=True)
             except docker.errors.APIError as e:
-                logger.warning('Failed to remove container during cleanup: %s', e)
+                logger.warning(
+                    'Failed to remove container during cleanup: %s', e
+                )

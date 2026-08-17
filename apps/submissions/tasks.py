@@ -33,5 +33,6 @@ def evaluate_submission_task(self, submission_id: str) -> None:
 
     except Exception:
         logger.exception(
-            'Celery caught unexpected error during evaluation',)
+            'Celery caught unexpected error during evaluation',
+        )
         raise

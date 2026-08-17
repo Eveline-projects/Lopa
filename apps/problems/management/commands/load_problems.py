@@ -118,11 +118,9 @@ class Command(BaseCommand):
 
         except Exception as unexpected_error:
             if isinstance(unexpected_error, CommandError):
-                raise 
+                raise
 
-            logger.exception(
-                'Unexpected error during problem seeding'
-                )
+            logger.exception('Unexpected error during problem seeding')
             raise CommandError(
                 f'Unexpected error during seeding: {unexpected_error}'
             )
