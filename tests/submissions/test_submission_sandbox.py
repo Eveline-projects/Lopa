@@ -3,6 +3,7 @@ from unittest.mock import MagicMock, patch
 import docker
 import pytest
 import requests
+from docker.errors import DockerException
 
 from apps.results.models import Result
 from apps.submissions.sandbox import run_code_in_sandbox
@@ -74,7 +75,7 @@ class TestRunCodeInSandbox:
         self, mock_from_env
     ):
         mock_client = MagicMock()
-        mock_client.containers.run.side_effect = Exception(
+        mock_client.containers.run.side_effect = DockerException(
             'Docker daemon connection lost'
         )
         mock_from_env.return_value = mock_client
@@ -95,7 +96,8 @@ class TestRunCodeInSandboxIntegration:
             pytest.skip('Docker daemon is not available - I skip the test')
 
         output, execution_time, status = run_code_in_sandbox(
-            "print('Integration test')"
+            "print('Integration test')",
+            '',
         )
 
         assert status == Result.Status.PASSED
